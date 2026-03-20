@@ -55,7 +55,7 @@ code_blocks:
 # FontAwesome图标库：https://fontawesome.com/icons
 # --------------------------------------
 social:
-  fab fa-github: https://github.com/PAntomie || Github || '#39C5BB'/'
+  fab fa-github: https://github.com/PhantomDaze || Github || '#39C5BB'/'
   fab fa-bilibili: https://space.bilibili.com/1590285979 || bilibili || '#39C5BB'
   # 示例配置：
   # fab fa-github: https://github.com/用户名 || Github || '#24292e'
@@ -300,8 +300,7 @@ aside:
       enable: true
       icon: fab fa-github
       text: Github主页
-      link: https://github.com/PAntomie
-  card_announcement:
+      link: https://github.com/PhantomDaze
     enable: true
     content: 暂无公告
   card_recent_post:

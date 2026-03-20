@@ -11,8 +11,8 @@ title: 关于本博客
 - 从Hexo框架迁移到更高效的框架
 - 优化布局排版
 
-### 博主P-Antomie
+### 博主PhantomDaze
 
 - [关于我？](/myexp)
-- Github名为PAntomie
+- Github名为PhantomDaze
 - Bilibili名为P-Antom，在Bilibili发布的内容更偏娱乐而非实用

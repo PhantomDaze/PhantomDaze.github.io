@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 'P-Antomie'
+title: 'PhantomDaze'
 subtitle: 'Blog'
 description: ''
-keywords: Antomie
-author: P-Antomie
+keywords: PhantomDaze
+author: PhantomDaze
 language: zh-CN
 timezone: 'Asia/Shanghai'
 
@@ -103,7 +103,7 @@ theme: butterfly
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: git@github.com:PAntomie/hexo.git
+  repo: git@github.com:PhantomDaze/hexo.git
   branch: main
 
 # Aplayer
