@@ -1,62 +1,40 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy Astro site to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3.9.1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
-          node-version: 21.x
-          # Target architecture for Node to use. Examples: x86, x64. Will use system architecture by default.
-          architecture: x64
-          # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
+          node-version: 22.x
           cache: npm
-          # Used to specify the path to a dependency file: package-lock.json, yarn.lock, etc. Supports wildcards or a list of file names for caching multiple dependencies.
-          cache-dependency-path: package-lock.json
-      - name: init
-        run: npm i -g hexo-cli hexo-util; npm i
-      - name: clean
-        run: hexo clean
-      - name: generate
-        run: hexo generate
-        
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Astro site
+        run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: './public'
+          path: ./dist
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
