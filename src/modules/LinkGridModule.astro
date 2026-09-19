@@ -1,0 +1,21 @@
+---
+type LinkItem = string | { label: string; href?: string };
+
+interface Props {
+	items: readonly LinkItem[];
+}
+
+const { items } = Astro.props;
+const links = items.map((item) => (typeof item === 'string' ? { label: item } : item));
+---
+
+<section class="mx-auto max-w-6xl px-5 py-8">
+	<div class="grid gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-5 md:grid-cols-4">
+		{links.map((item) => (
+			<a href={item.href} class:list={['flex items-center gap-3 rounded-lg border border-white/10 bg-black/20 p-4 transition', item.href && 'hover:border-white/30 hover:bg-white/[0.06]']}>
+				<span class="h-2 w-2 shrink-0 rounded-full bg-white"></span>
+				<span class="text-sm text-zinc-300">{item.label}</span>
+			</a>
+		))}
+	</div>
+</section>

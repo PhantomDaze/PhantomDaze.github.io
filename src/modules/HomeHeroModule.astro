@@ -1,0 +1,104 @@
+---
+import HomeEnhancements from '../components/HomeEnhancements.astro';
+import SocialIcon from '../components/SocialIcon.astro';
+import { getLocaleFromUrl, getSiteConfig } from '../config/site';
+
+interface Props {
+	steamLoadingText?: string;
+}
+
+const locale = getLocaleFromUrl(Astro.url);
+const siteConfig = getSiteConfig(locale);
+const home = siteConfig.home;
+const { steamLoadingText = locale === 'zh' ? 'Steam：加载中...' : 'Steam: loading...' } = Astro.props;
+const timeSeparator = locale === 'zh' ? '：' : ':';
+---
+
+<section class="mx-auto grid max-w-6xl gap-14 px-5 py-16 md:grid-cols-[0.85fr_1.15fr] md:items-center md:py-24 lg:gap-20">
+	<div class="order-2 md:order-1 md:pt-10">
+		<p
+			data-visitor-count
+			data-template={home.visitorText}
+			data-fallback-count={siteConfig.visitorCount}
+			class="text-center text-sm text-zinc-500 md:text-left"
+		>
+			{home.visitorText.replace('{count}', siteConfig.visitorCount)}
+		</p>
+		<div class="mx-auto mt-8 max-w-md rounded-lg border border-white/10 bg-white/[0.04] p-6 shadow-2xl shadow-black/30 md:mx-0 md:p-8">
+			<h2 class="text-xl font-semibold text-white">{siteConfig.today.title}</h2>
+			<div class="mt-4 space-y-2 text-base leading-7">
+				<p class="text-zinc-400">{siteConfig.today.current}</p>
+				<p class="font-semibold text-blue-400">{siteConfig.today.next}</p>
+				<p class="font-semibold text-white">{siteConfig.today.note}</p>
+				<p class="text-sm text-zinc-500">
+					{siteConfig.today.timeLabel}{timeSeparator} <span data-melbourne-time>--:--</span>
+				</p>
+				<p class="text-sm text-zinc-500">
+					<a
+						data-steam-status
+						href="#"
+						class="inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-white/25 hover:bg-white/10 hover:text-white"
+					>
+						<span data-steam-status-dot class="h-2 w-2 shrink-0 rounded-full bg-zinc-600"></span>
+						<img
+							data-steam-game-logo
+							hidden
+							class="h-5 w-5 shrink-0 rounded bg-zinc-900 object-cover"
+							alt=""
+							loading="lazy"
+							onerror="this.hidden = true;"
+						/>
+						<span data-steam-status-text class="min-w-0 truncate">{steamLoadingText}</span>
+					</a>
+				</p>
+			</div>
+		</div>
+		<div class="mx-auto mt-8 max-w-3xl rounded-lg border border-white/10 bg-white/[0.04] p-5 md:mx-0 md:p-6">
+			<div class="flex flex-wrap justify-center gap-3">
+				{siteConfig.quickLinks.map((item) => (
+					<a
+						href={item.href}
+						class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/10"
+					>
+						<SocialIcon icon={item.icon} label={item.label} class="h-6 w-6" />
+						{item.label}
+					</a>
+				))}
+			</div>
+		</div>
+	</div>
+
+	<div class="order-1 md:order-2">
+		<div class="mb-12 flex items-center gap-6 md:mb-16">
+			<img
+				src={siteConfig.avatar}
+				alt={`${siteConfig.name} avatar`}
+				class="h-36 w-36 shrink-0 rounded-full border border-white/15 bg-zinc-900 object-cover shadow-2xl shadow-black/40 md:h-48 md:w-48 lg:h-52 lg:w-52"
+				loading="eager"
+			/>
+			<div class="min-w-0">
+				<p class="text-sm font-medium uppercase tracking-[0.28em] text-zinc-500">{siteConfig.title}</p>
+				<p class="mt-3 max-w-sm text-sm leading-6 text-zinc-500">{home.eyebrowNote}</p>
+			</div>
+		</div>
+		<h1
+			data-time-greeting
+			class="max-w-4xl whitespace-pre-line text-5xl font-semibold tracking-normal text-white md:text-6xl lg:text-7xl"
+		>
+			{home.headline}
+		</h1>
+		<p class="mt-8 max-w-2xl whitespace-pre-line text-lg leading-8 text-zinc-400">
+			{home.intro}
+		</p>
+		<div class="mt-10 flex flex-wrap gap-3">
+			<a href={home.primaryCta.href} class="rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200">
+				{home.primaryCta.label}
+			</a>
+			<a href={home.secondaryCta.href} class="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/40 hover:bg-white/10">
+				{home.secondaryCta.label}
+			</a>
+		</div>
+	</div>
+</section>
+
+<HomeEnhancements locale={locale} today={siteConfig.today} />

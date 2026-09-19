@@ -1,0 +1,22 @@
+---
+interface Props {
+	icon?: string;
+	label: string;
+	class?: string;
+}
+
+const { icon, label } = Astro.props;
+const className = Astro.props.class ?? 'h-6 w-6';
+const isImageIcon = icon?.startsWith('/') || icon?.startsWith('http://') || icon?.startsWith('https://');
+const fallback = label.slice(0, 2);
+---
+
+<span class:list={['grid place-items-center overflow-hidden rounded-full bg-white/10 text-[10px] font-semibold text-zinc-300', className]}>
+	{
+		isImageIcon ? (
+			<img src={icon} alt="" class="h-[62%] w-[62%] object-contain" loading="lazy" />
+		) : (
+			icon ?? fallback
+		)
+	}
+</span>

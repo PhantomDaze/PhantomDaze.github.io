@@ -1,0 +1,34 @@
+---
+import { getLocaleFromUrl, getSiteConfig } from '../config/site';
+import SocialIcon from './SocialIcon.astro';
+
+const siteConfig = getSiteConfig(getLocaleFromUrl(Astro.url));
+---
+
+<section class="mx-auto max-w-6xl px-5 py-20">
+	<div class="rounded-lg border border-white/10 bg-white/[0.04] p-8 md:p-10">
+		<p class="text-sm font-medium uppercase tracking-[0.24em] text-zinc-500">{siteConfig.contactPanel.kicker}</p>
+		<h2 class="mt-4 max-w-2xl whitespace-pre-line text-3xl font-semibold tracking-normal text-white md:text-5xl">
+			{siteConfig.contactPanel.heading}
+		</h2>
+		<div class="mt-8 flex flex-wrap gap-3">
+			<a
+				href={`mailto:${siteConfig.email}`}
+				class="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/40 hover:bg-white/10"
+			>
+				<SocialIcon icon={siteConfig.emailIcon} label="Email" class="h-6 w-6" />
+				{siteConfig.email}
+			</a>
+			{siteConfig.socials.map((item) => (
+				<a
+					href={item.href}
+					target="_blank"
+					class="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/40 hover:bg-white/10"
+				>
+					<SocialIcon icon={item.icon} label={item.label} class="h-6 w-6" />
+					{item.label}
+				</a>
+			))}
+		</div>
+	</div>
+</section>

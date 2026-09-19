@@ -1,0 +1,219 @@
+---
+interface Props {
+	locale: 'zh' | 'en';
+}
+
+const { locale } = Astro.props;
+
+const labels = {
+	zh: {
+		title: 'Steam 状态',
+		loading: '正在读取 Steam 资料...',
+		unavailable: 'Steam 资料暂时不可用',
+		level: '等级',
+		current: '当前状态',
+		playing: '正在玩 {game}',
+		recent: '最近玩过',
+		totalPlaytime: '总游玩 {time}',
+		noRecent: '暂无最近游玩记录',
+		states: {
+			Offline: '离线',
+			Online: '在线',
+			Busy: '忙碌',
+			Away: '离开',
+			Snooze: '暂离',
+			'Looking to trade': '在线',
+			'Looking to play': '在线',
+			Unavailable: '暂时不可用',
+			'Not configured': '未配置',
+			Unknown: '未知',
+		},
+	},
+	en: {
+		title: 'Steam Status',
+		loading: 'Loading Steam profile...',
+		unavailable: 'Steam profile unavailable',
+		level: 'Level',
+		current: 'Current status',
+		playing: 'Playing {game}',
+		recent: 'Recently played',
+		totalPlaytime: 'Total playtime {time}',
+		noRecent: 'No recent games',
+		states: {
+			Offline: 'Offline',
+			Online: 'Online',
+			Busy: 'Busy',
+			Away: 'Away',
+			Snooze: 'Snooze',
+			'Looking to trade': 'Online',
+			'Looking to play': 'Online',
+			Unavailable: 'Unavailable',
+			'Not configured': 'Not configured',
+			Unknown: 'Unknown',
+		},
+	},
+} as const;
+---
+
+<section class="mx-auto max-w-6xl px-5 py-16">
+	<div data-steam-profile data-labels={JSON.stringify(labels[locale])} class="rounded-lg border border-white/10 bg-white/[0.03] p-6">
+		<div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+			<div class="flex items-center gap-4">
+				<img data-steam-avatar hidden class="h-16 w-16 rounded-lg border border-white/10 bg-zinc-900 object-cover" alt="" loading="lazy" />
+				<div>
+					<p class="text-sm uppercase tracking-[0.24em] text-zinc-500">{labels[locale].title}</p>
+					<a data-steam-name class="mt-2 block text-2xl font-semibold text-white transition hover:text-zinc-200">{labels[locale].loading}</a>
+					<p data-steam-level class="mt-1 text-sm text-zinc-500"></p>
+				</div>
+			</div>
+			<div class="rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-300 md:min-w-64">
+				<p class="text-zinc-500">{labels[locale].current}</p>
+				<a data-steam-current class="mt-1 block font-medium text-white transition hover:text-zinc-200">{labels[locale].loading}</a>
+			</div>
+		</div>
+
+		<div class="mt-8">
+			<h3 class="text-sm uppercase tracking-[0.24em] text-zinc-500">{labels[locale].recent}</h3>
+			<div data-steam-recent class="mt-4 grid gap-3 md:grid-cols-3">
+				<p class="text-sm text-zinc-500">{labels[locale].loading}</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script data-astro-rerun>
+	const steamProfileState = window;
+
+	const mountSteamProfile = () => {
+		const root = document.querySelector('[data-steam-profile]');
+		if (!root) return;
+
+		const labels = JSON.parse(root.dataset.labels ?? '{}');
+		const avatar = root.querySelector('[data-steam-avatar]');
+		const name = root.querySelector('[data-steam-name]');
+		const level = root.querySelector('[data-steam-level]');
+		const current = root.querySelector('[data-steam-current]');
+		const recent = root.querySelector('[data-steam-recent]');
+
+		const stateLabel = (status) => labels.states?.[status?.personaStateLabel] ?? status?.personaStateLabel ?? labels.states?.Unknown;
+		const profileHref = (status) => status?.profileUrl || undefined;
+		const storeHref = (gameId) => gameId ? `https://store.steampowered.com/app/${gameId}` : undefined;
+
+		const formatPlaytime = (minutes) => {
+			const totalMinutes = Number(minutes) || 0;
+			if (totalMinutes < 60) return `${totalMinutes}m`;
+			const hours = Math.floor(totalMinutes / 60);
+			const mins = totalMinutes % 60;
+			return mins ? `${hours}h ${mins}m` : `${hours}h`;
+		};
+
+		const setLink = (element, href) => {
+			if (!element) return;
+			if (href) {
+				element.href = href;
+				element.removeAttribute('aria-disabled');
+			} else {
+				element.removeAttribute('href');
+				element.setAttribute('aria-disabled', 'true');
+			}
+		};
+
+		const renderUnavailable = () => {
+			if (avatar) {
+				avatar.hidden = true;
+				avatar.removeAttribute('src');
+				avatar.alt = '';
+			}
+			if (name) name.textContent = labels.unavailable;
+			setLink(name, undefined);
+			if (level) level.textContent = '';
+			if (current) current.textContent = labels.unavailable;
+			setLink(current, undefined);
+			if (recent) recent.innerHTML = `<p class="text-sm text-zinc-500">${labels.noRecent}</p>`;
+		};
+
+		const renderRecentGames = (games) => {
+			if (!recent) return;
+			if (!games?.length) {
+				recent.innerHTML = `<p class="text-sm text-zinc-500">${labels.noRecent}</p>`;
+				return;
+			}
+
+			recent.replaceChildren(
+				...games.map((game) => {
+					const link = document.createElement('a');
+					link.href = game.storeUrl;
+					link.className = 'rounded-lg border border-white/10 bg-black/20 p-4 transition hover:border-white/30 hover:bg-white/[0.06]';
+
+					const row = document.createElement('div');
+					row.className = 'flex items-center gap-3';
+
+					if (game.iconUrl) {
+						const icon = document.createElement('img');
+						icon.src = game.iconUrl;
+						icon.alt = '';
+						icon.loading = 'lazy';
+						icon.className = 'h-8 w-8 rounded bg-zinc-900 object-cover';
+						row.append(icon);
+					}
+
+					const title = document.createElement('p');
+					title.className = 'line-clamp-2 text-sm font-medium text-white';
+					title.textContent = game.name;
+					row.append(title);
+
+					const playtime = document.createElement('p');
+					playtime.className = 'mt-3 text-xs text-zinc-500';
+					playtime.textContent = labels.totalPlaytime.replace('{time}', formatPlaytime(game.playtimeForeverMinutes));
+
+					link.append(row, playtime);
+					return link;
+				}),
+			);
+		};
+
+		fetch('/api/steam-status', { cache: 'no-store' })
+			.then((response) => {
+				if (!response.ok) throw new Error('Steam profile request failed.');
+				return response.json();
+			})
+			.then((status) => {
+				if (!status.ok) {
+					renderUnavailable();
+					return;
+				}
+
+				if (avatar && status.avatarUrl) {
+					avatar.src = status.avatarUrl;
+					avatar.alt = status.personaName ?? 'Steam avatar';
+					avatar.hidden = false;
+				}
+
+				if (name) {
+					name.textContent = status.personaName ?? 'Steam';
+					setLink(name, profileHref(status));
+				}
+
+				if (level) {
+					level.textContent = Number.isSafeInteger(status.steamLevel) ? `${labels.level} ${status.steamLevel}` : '';
+				}
+
+				if (current) {
+					current.textContent = status.playing && status.gameName
+						? labels.playing.replace('{game}', status.gameName)
+						: stateLabel(status);
+					setLink(current, status.playing ? storeHref(status.gameId) ?? profileHref(status) : profileHref(status));
+				}
+
+				renderRecentGames(status.recentGames);
+			})
+			.catch(renderUnavailable);
+	};
+
+	mountSteamProfile();
+
+	if (!steamProfileState.steamProfileEventsReady) {
+		steamProfileState.steamProfileEventsReady = true;
+		document.addEventListener('astro:page-load', mountSteamProfile);
+	}
+</script>

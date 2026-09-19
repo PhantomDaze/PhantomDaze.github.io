@@ -1,0 +1,67 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+type GameItem = {
+	label: string;
+	description?: string;
+	gameId?: number | string;
+	href?: string;
+	icon?: string;
+};
+
+interface Props {
+	title: string;
+	description?: string;
+	items: Array<string | GameItem>;
+}
+
+const { description, items, title } = Astro.props;
+const games = items.map((item) => (typeof item === 'string' ? { label: item } : item));
+---
+
+<section class="mx-auto max-w-6xl px-5 py-16">
+	<SectionHeading title={title} description={description} />
+	<div class="grid gap-4 md:grid-cols-2">
+		{games.map((game) => {
+			const content = (
+				<>
+					{game.icon && (
+						<img
+							src={game.icon}
+							alt=""
+							class="h-12 w-12 shrink-0 rounded bg-zinc-950 object-cover ring-1 ring-white/10"
+							loading="lazy"
+						/>
+					)}
+					<div class="min-w-0">
+						<div class="flex flex-wrap items-center gap-2">
+							<h3 class="truncate text-base font-semibold text-white">{game.label}</h3>
+							{game.gameId && (
+								<span class="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 text-xs text-zinc-500">
+									ID {game.gameId}
+								</span>
+							)}
+						</div>
+						{game.description && <p class="mt-2 text-sm leading-6 text-zinc-400">{game.description}</p>}
+					</div>
+				</>
+			);
+
+			return game.href ? (
+				<a
+					href={game.href}
+					class:list={[
+						'group flex gap-4 rounded-lg border border-white/10 bg-white/[0.03] p-5 transition',
+						'hover:border-white/30 hover:bg-white/[0.06]',
+					]}
+				>
+					{content}
+				</a>
+			) : (
+				<article class="flex gap-4 rounded-lg border border-white/10 bg-white/[0.03] p-5">
+					{content}
+				</article>
+			);
+		})}
+	</div>
+</section>

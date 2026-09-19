@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import BlogList from '../components/BlogList.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+
+interface Props {
+	kicker?: string;
+	title: string;
+	description?: string;
+	labels: {
+		search: string;
+		all: string;
+		empty: string;
+	};
+}
+
+const { description, kicker, labels, title } = Astro.props;
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<section class="mx-auto max-w-5xl px-5 py-20 md:py-28">
+	<SectionHeading kicker={kicker} title={title} description={description} />
+	<BlogList posts={posts} labels={labels} />
+</section>

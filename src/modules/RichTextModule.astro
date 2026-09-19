@@ -1,0 +1,18 @@
+---
+import SectionHeading from '../components/SectionHeading.astro';
+
+interface Props {
+	kicker?: string;
+	title?: string;
+	body: readonly string[];
+}
+
+const { body, kicker, title } = Astro.props;
+---
+
+<section class="mx-auto max-w-4xl px-5 py-16">
+	{title && <SectionHeading kicker={kicker} title={title} />}
+	<div class="space-y-5 text-base leading-8 text-zinc-400">
+		{body.map((paragraph) => <p class="whitespace-pre-line">{paragraph}</p>)}
+	</div>
+</section>

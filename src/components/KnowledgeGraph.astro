@@ -1,0 +1,237 @@
+---
+interface Node {
+	id: string;
+	label: string;
+	type: 'post';
+	href?: string;
+}
+
+interface Edge {
+	source: string;
+	target: string;
+	type: 'wiki-link';
+}
+
+interface Props {
+	graph: {
+		nodes: Node[];
+		edges: Edge[];
+	};
+	labels?: {
+		repulsion: string;
+		distance: string;
+		motion: string;
+	};
+}
+
+const { graph, labels = { repulsion: '斥力', distance: '间距', motion: '动态' } } = Astro.props;
+const graphId = `knowledge-graph-${Math.random().toString(36).slice(2)}`;
+---
+
+<div class="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+	<div
+		id={graphId}
+		data-knowledge-graph
+		class="h-[520px] overflow-hidden rounded-lg border border-white/10 bg-black/30"
+	></div>
+	<div class="mt-4 grid gap-4 text-xs text-zinc-500 sm:grid-cols-3">
+		<label class="grid gap-2">
+			<span>{labels.repulsion}</span>
+			<input data-graph-control="repulsion" class="w-full accent-white" type="range" min="280" max="1600" value="780" step="20" />
+		</label>
+		<label class="grid gap-2">
+			<span>{labels.distance}</span>
+			<input data-graph-control="distance" class="w-full accent-white" type="range" min="80" max="260" value="155" step="5" />
+		</label>
+		<label class="grid gap-2">
+			<span>{labels.motion}</span>
+			<input data-graph-control="motion" class="w-full accent-white" type="range" min="0" max="80" value="24" step="2" />
+		</label>
+	</div>
+</div>
+
+<script type="application/json" id={`${graphId}-data`} set:html={JSON.stringify(graph)} />
+
+<script>
+	function cleanupKnowledgeGraph(root) {
+		const frameId = Number(root.dataset.animationFrameId ?? 0);
+		if (frameId) cancelAnimationFrame(frameId);
+		delete root.dataset.animationFrameId;
+		delete root.dataset.knowledgeGraphMounted;
+	}
+
+	function mountKnowledgeGraph(root) {
+		cleanupKnowledgeGraph(root);
+		const dataScript = document.getElementById(`${root.id}-data`);
+		if (!dataScript?.textContent) return;
+
+		const graph = JSON.parse(dataScript.textContent);
+		const width = root.clientWidth || 900;
+		const height = root.clientHeight || 520;
+		const svgNS = 'http://www.w3.org/2000/svg';
+		const controls = {
+			repulsion: root.parentElement?.querySelector('[data-graph-control="repulsion"]'),
+			distance: root.parentElement?.querySelector('[data-graph-control="distance"]'),
+			motion: root.parentElement?.querySelector('[data-graph-control="motion"]'),
+		};
+
+		const nodes = graph.nodes.map((node, index) => ({
+			...node,
+			x: width / 2 + Math.cos(index) * width * 0.25,
+			y: height / 2 + Math.sin(index) * height * 0.25,
+			vx: 0,
+			vy: 0,
+		}));
+		const simNodeById = new Map(nodes.map((node) => [node.id, node]));
+		const layoutEdges = graph.edges
+			.map((edge) => ({
+				...edge,
+				sourceNode: simNodeById.get(edge.source),
+				targetNode: simNodeById.get(edge.target),
+			}))
+			.filter((edge) => edge.sourceNode && edge.targetNode);
+		const visibleEdges = layoutEdges;
+		const degreeById = new Map(nodes.map((node) => [node.id, 0]));
+		visibleEdges.forEach((edge) => {
+			degreeById.set(edge.source, (degreeById.get(edge.source) ?? 0) + 1);
+			degreeById.set(edge.target, (degreeById.get(edge.target) ?? 0) + 1);
+		});
+
+		root.innerHTML = '';
+		root.dataset.knowledgeGraphMounted = 'true';
+		const svg = document.createElementNS(svgNS, 'svg');
+		svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+		svg.setAttribute('class', 'h-full w-full');
+		root.append(svg);
+
+		const edgeGroup = document.createElementNS(svgNS, 'g');
+		const nodeGroup = document.createElementNS(svgNS, 'g');
+		svg.append(edgeGroup, nodeGroup);
+
+		const edgeElements = visibleEdges.map((edge) => {
+			const line = document.createElementNS(svgNS, 'line');
+			line.setAttribute('stroke', 'rgba(255,255,255,0.34)');
+			line.setAttribute('stroke-width', '1.5');
+			line.setAttribute('stroke-linecap', 'round');
+			edgeGroup.append(line);
+			return line;
+		});
+
+		const nodeElements = nodes.map((node) => {
+			const degree = degreeById.get(node.id) ?? 0;
+			const radius = Math.min(18, 7 + Math.sqrt(degree) * 2.2);
+			const group = document.createElementNS(svgNS, 'g');
+			group.setAttribute('class', 'cursor-pointer');
+
+			const circle = document.createElementNS(svgNS, 'circle');
+			circle.setAttribute('r', `${radius}`);
+			circle.setAttribute('fill', 'white');
+			circle.setAttribute('stroke', 'rgba(255,255,255,0.35)');
+			circle.setAttribute('stroke-width', '1');
+
+			const label = document.createElementNS(svgNS, 'text');
+			label.textContent = node.label;
+			label.setAttribute('x', `${radius + 5}`);
+			label.setAttribute('y', '4');
+			label.setAttribute('fill', 'white');
+			label.setAttribute('font-size', `${Math.min(13, 11 + Math.sqrt(degree) * 0.35)}`);
+			label.setAttribute('font-family', 'ui-sans-serif, system-ui, sans-serif');
+
+			group.append(circle, label);
+			group.addEventListener('click', () => {
+				if (node.href) window.location.href = node.href;
+			});
+			nodeGroup.append(group);
+			return group;
+		});
+
+		function tick(time = 0) {
+			const repulsion = Number(controls.repulsion?.value ?? 780);
+			const linkDistance = Number(controls.distance?.value ?? 155);
+			const motion = Number(controls.motion?.value ?? 24) / 1000;
+
+			nodes.forEach((node) => {
+				nodes.forEach((other) => {
+					if (node === other) return;
+					const dx = node.x - other.x || 0.01;
+					const dy = node.y - other.y || 0.01;
+					const distance = Math.max(Math.sqrt(dx * dx + dy * dy), 24);
+					const force = repulsion / (distance * distance);
+					node.vx += (dx / distance) * force;
+					node.vy += (dy / distance) * force;
+				});
+			});
+
+			layoutEdges.forEach((edge) => {
+				const source = edge.sourceNode;
+				const target = edge.targetNode;
+				const dx = target.x - source.x;
+				const dy = target.y - source.y;
+				const distance = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
+				const desired = linkDistance;
+				const force = (distance - desired) * 0.004;
+				const fx = (dx / distance) * force;
+				const fy = (dy / distance) * force;
+				source.vx += fx;
+				source.vy += fy;
+				target.vx -= fx;
+				target.vy -= fy;
+			});
+
+			nodes.forEach((node) => {
+				const seed = node.id.length * 19;
+				node.vx += Math.sin(time * 0.0011 + seed) * motion;
+				node.vy += Math.cos(time * 0.0013 + seed) * motion;
+				node.vx += (width / 2 - node.x) * 0.002;
+				node.vy += (height / 2 - node.y) * 0.002;
+				node.vx *= 0.86;
+				node.vy *= 0.86;
+				node.x = Math.min(width - 120, Math.max(24, node.x + node.vx));
+				node.y = Math.min(height - 24, Math.max(24, node.y + node.vy));
+			});
+
+			edgeElements.forEach((line, index) => {
+				const edge = visibleEdges[index];
+				line.setAttribute('x1', edge.sourceNode.x);
+				line.setAttribute('y1', edge.sourceNode.y);
+				line.setAttribute('x2', edge.targetNode.x);
+				line.setAttribute('y2', edge.targetNode.y);
+				line.setAttribute('opacity', `${0.46 + Math.sin(time * 0.002 + index) * 0.16}`);
+			});
+
+			nodeElements.forEach((group, index) => {
+				const node = nodes[index];
+				const pulse = Math.sin(time * 0.002 + index) * 0.7;
+				group.setAttribute('transform', `translate(${node.x}, ${node.y}) scale(${1 + pulse * 0.02})`);
+			});
+		}
+
+		for (let i = 0; i < 160; i += 1) tick(i * 16);
+
+		let frameId = 0;
+		function animate(time) {
+			tick(time);
+			frameId = requestAnimationFrame(animate);
+		}
+		frameId = requestAnimationFrame(animate);
+		root.dataset.animationFrameId = String(frameId);
+	}
+
+	function mountKnowledgeGraphs() {
+		document.querySelectorAll('[data-knowledge-graph]').forEach((root) => {
+			requestAnimationFrame(() => mountKnowledgeGraph(root));
+		});
+	}
+
+	function cleanupKnowledgeGraphs() {
+		document.querySelectorAll('[data-knowledge-graph]').forEach(cleanupKnowledgeGraph);
+	}
+
+	mountKnowledgeGraphs();
+
+	if (!window.knowledgeGraphEventsReady) {
+		window.knowledgeGraphEventsReady = 'true';
+		document.addEventListener('astro:page-load', mountKnowledgeGraphs);
+		document.addEventListener('astro:before-swap', cleanupKnowledgeGraphs);
+	}
+</script>

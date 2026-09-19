@@ -1,0 +1,32 @@
+---
+import { getLocaleFromUrl, getSiteConfig } from '../config/site';
+import SocialIcon from './SocialIcon.astro';
+
+const siteConfig = getSiteConfig(getLocaleFromUrl(Astro.url));
+const atlasRepo = 'https://github.com/luckykevvv/Atlas';
+---
+
+<footer class="border-t border-white/10">
+	<div class="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-[1fr_auto] md:items-end">
+		<div>
+			<p class="text-lg font-semibold text-white">{siteConfig.name}</p>
+			<p class="mt-2 max-w-xl text-sm leading-6 text-zinc-400">{siteConfig.description}</p>
+		</div>
+		<div class="flex flex-wrap gap-3">
+			{siteConfig.socials.map((item) => (
+				<a href={item.href} class="inline-flex items-center gap-2 text-sm text-zinc-400 transition hover:text-white" target="_blank">
+					<SocialIcon icon={item.icon} label={item.label} class="h-6 w-6 border border-white/10 bg-white/[0.04]" />
+					{item.label}
+				</a>
+			))}
+		</div>
+	</div>
+	<div class="border-t border-white/10">
+		<p class="mx-auto max-w-6xl px-5 py-5 text-xs text-zinc-500">
+			Powered by
+			<a href="https://astro.build/" class="text-zinc-300 transition hover:text-white" target="_blank" rel="noreferrer">Astro</a>
+			and
+			<a href={atlasRepo} class="text-zinc-300 transition hover:text-white" target="_blank" rel="noreferrer">Atlas</a>
+		</p>
+	</div>
+</footer>

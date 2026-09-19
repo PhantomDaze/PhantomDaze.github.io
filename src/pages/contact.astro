@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageRenderer from '../components/PageRenderer.astro';
+import { getLocaleFromUrl, getSiteConfig } from '../config/site';
+
+const locale = getLocaleFromUrl(Astro.url);
+const siteConfig = getSiteConfig(locale);
+const page = siteConfig.pages.contact;
+---
+
+<Layout title={page.title} description={page.description}>
+	<PageRenderer locale={locale} modules={page.modules} />
+</Layout>

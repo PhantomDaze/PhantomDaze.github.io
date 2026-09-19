@@ -1,0 +1,66 @@
+---
+import AboutGameList from './AboutGameList.astro';
+import ContactPanel from './ContactPanel.astro';
+import SteamProfileCard from './SteamProfileCard.astro';
+import AboutIntroModule from '../modules/AboutIntroModule.astro';
+import BlogIndexModule from '../modules/BlogIndexModule.astro';
+import BlogPreviewModule from '../modules/BlogPreviewModule.astro';
+import ContactCardsModule from '../modules/ContactCardsModule.astro';
+import HomeHeroModule from '../modules/HomeHeroModule.astro';
+import KnowledgeGraphModule from '../modules/KnowledgeGraphModule.astro';
+import LinkGridModule from '../modules/LinkGridModule.astro';
+import PageHeaderModule from '../modules/PageHeaderModule.astro';
+import ProjectGridModule from '../modules/ProjectGridModule.astro';
+import ProjectListModule from '../modules/ProjectListModule.astro';
+import ResumeModule from '../modules/ResumeModule.astro';
+import RichTextModule from '../modules/RichTextModule.astro';
+import SkillCloudModule from '../modules/SkillCloudModule.astro';
+import type { Locale } from '../config/site';
+import type { PageModule } from '../modules/types';
+
+interface Props {
+	locale: Locale;
+	modules: readonly PageModule[];
+}
+
+const { locale, modules } = Astro.props;
+---
+
+{modules.map((module) => {
+	switch (module.type) {
+		case 'aboutIntro':
+			return <AboutIntroModule {...module.props} />;
+		case 'steamProfile':
+			return <SteamProfileCard locale={locale} />;
+		case 'gameList':
+			return <AboutGameList {...module.props} />;
+		case 'skillCloud':
+			return <SkillCloudModule {...module.props} />;
+		case 'contactPanel':
+			return <ContactPanel />;
+		case 'homeHero':
+			return <HomeHeroModule {...module.props} />;
+		case 'linkGrid':
+			return <LinkGridModule {...module.props} />;
+		case 'projectGrid':
+			return <ProjectGridModule {...module.props} />;
+		case 'blogPreview':
+			return <BlogPreviewModule {...module.props} />;
+		case 'pageHeader':
+			return <PageHeaderModule {...module.props} />;
+		case 'projectList':
+			return <ProjectListModule {...module.props} />;
+		case 'blogIndex':
+			return <BlogIndexModule {...module.props} />;
+		case 'knowledgeGraph':
+			return <KnowledgeGraphModule {...module.props} />;
+		case 'resume':
+			return <ResumeModule {...module.props} />;
+		case 'contactCards':
+			return <ContactCardsModule {...module.props} />;
+		case 'richText':
+			return <RichTextModule {...module.props} />;
+		default:
+			return null;
+	}
+})}

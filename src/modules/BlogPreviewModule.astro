@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import BlogCard from '../components/BlogCard.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+
+interface Props {
+	kicker?: string;
+	title: string;
+	description?: string;
+	limit?: number;
+}
+
+const { description, kicker, limit = 3, title } = Astro.props;
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, limit);
+---
+
+<section class="mx-auto max-w-6xl px-5 py-16">
+	<SectionHeading kicker={kicker} title={title} description={description} />
+	<div>
+		{posts.map((post) => <BlogCard post={post} />)}
+	</div>
+</section>

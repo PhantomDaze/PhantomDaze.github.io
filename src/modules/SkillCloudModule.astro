@@ -1,0 +1,19 @@
+---
+import SectionHeading from '../components/SectionHeading.astro';
+
+interface Props {
+	title: string;
+	skills: readonly string[];
+}
+
+const { skills, title } = Astro.props;
+---
+
+<section class="mx-auto max-w-6xl px-5 py-16">
+	<SectionHeading title={title} />
+	<div class="flex flex-wrap gap-3">
+		{skills.map((skill) => (
+			<span class="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-zinc-200">{skill}</span>
+		))}
+	</div>
+</section>

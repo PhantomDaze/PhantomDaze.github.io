@@ -1,29 +1,35 @@
 {
-  "name": "hexo-site",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "build": "hexo generate",
-    "clean": "hexo clean",
-    "deploy": "hexo deploy",
-    "server": "hexo server"
+  "name": "atlas",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
   },
-  "hexo": {
-    "version": "7.3.0"
+  "scripts": {
+    "dev": "astro dev",
+    "dev:host": "node ./scripts/dev-server.mjs",
+    "dev:dynamic": "node ./scripts/dev-server.mjs --dynamic",
+    "build": "astro build",
+    "build:dynamic": "node ./scripts/with-dynamic-env.mjs astro build",
+    "start": "node ./scripts/start-server.mjs",
+    "preview": "astro preview",
+    "setup": "node ./scripts/setup.mjs",
+    "pm2:start": "npm run build:dynamic && pm2 start ecosystem.config.cjs",
+    "pm2:restart": "npm run build:dynamic && pm2 restart atlas-dynamic",
+    "pm2:logs": "pm2 logs atlas-dynamic",
+    "pm2:stop": "pm2 stop atlas-dynamic",
+    "pm2:delete": "pm2 delete atlas-dynamic",
+    "astro": "astro"
   },
   "dependencies": {
-    "hexo": "^7.0.0",
-    "hexo-cli": "^4.3.2",
-    "hexo-generator-archive": "^2.0.0",
-    "hexo-generator-category": "^2.0.0",
-    "hexo-generator-index": "^3.0.0",
-    "hexo-generator-tag": "^2.0.0",
-    "hexo-renderer-ejs": "^2.0.0",
-    "hexo-renderer-marked": "^6.0.0",
-    "hexo-renderer-pug": "^3.0.0",
-    "hexo-renderer-stylus": "^3.0.1",
-    "hexo-server": "^3.0.0",
-    "hexo-tag-aplayer": "^3.0.4",
-    "hexo-theme-landscape": "^1.0.0"
+    "@tailwindcss/vite": "^4.3.0",
+    "astro": "^6.3.6",
+    "katex": "^0.16.47",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "tailwindcss": "^4.3.0"
+  },
+  "optionalDependencies": {
+    "@astrojs/node": "^10.1.1"
   }
 }

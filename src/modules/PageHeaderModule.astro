@@ -1,0 +1,15 @@
+---
+import SectionHeading from '../components/SectionHeading.astro';
+
+interface Props {
+	kicker?: string;
+	heading: string;
+	intro?: string;
+}
+
+const { heading, intro, kicker } = Astro.props;
+---
+
+<section class="mx-auto max-w-6xl px-5 py-20 md:py-28">
+	<SectionHeading kicker={kicker} title={heading} description={intro} />
+</section>

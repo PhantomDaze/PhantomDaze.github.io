@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageRenderer from '../components/PageRenderer.astro';
+import { getSiteConfig } from '../config/site';
+import type { PageModule } from '../modules/types';
+
+export const prerender = true;
+
+type CustomPage = {
+	path?: string;
+	slug?: string;
+	title: string;
+	description?: string;
+	modules: readonly PageModule[];
+};
+
+const fixedPaths = new Set(['about', 'blog', 'contact', 'graph', 'projects', 'resume']);
+const normalizeCustomPath = (page: CustomPage) => (page.path ?? page.slug ?? '').replace(/^\/+|\/+$/g, '');
+
+export function getStaticPaths() {
+	const pages = ((getSiteConfig('zh') as { customPages?: readonly CustomPage[] }).customPages ?? [])
+		.filter((page) => normalizeCustomPath(page) && !fixedPaths.has(normalizeCustomPath(page).split('/')[0]));
+
+	return pages.map((page) => ({
+		params: { custom: normalizeCustomPath(page) },
+		props: { page },
+	}));
+}
+
+interface Props {
+	page?: CustomPage;
+}
+
+const page = Astro.props.page;
+if (!page) {
+	Astro.response.status = 404;
+}
+---
+
+{page && (
+	<Layout title={page.title} description={page.description}>
+		<PageRenderer locale="zh" modules={page.modules} />
+	</Layout>
+)}

@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectCard from '../components/ProjectCard.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { getLocaleFromUrl } from '../config/site';
+
+interface Props {
+	kicker?: string;
+	title: string;
+	description?: string;
+	featuredOnly?: boolean;
+	limit?: number;
+	columns?: 2 | 3;
+	largePadding?: boolean;
+}
+
+const { columns = 3, description, featuredOnly = false, kicker, largePadding = false, limit, title } = Astro.props;
+const locale = getLocaleFromUrl(Astro.url);
+const projects = (await getCollection('projects'))
+	.filter((project) => project.data.lang === locale)
+	.filter((project) => !featuredOnly || project.data.featured)
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, limit ?? Number.POSITIVE_INFINITY);
+---
+
+<section class:list={['mx-auto max-w-6xl px-5', largePadding ? 'py-20 md:py-28' : 'py-16']}>
+	<SectionHeading kicker={kicker} title={title} description={description} />
+	<div class:list={['grid gap-4', columns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3']}>
+		{projects.map((project) => <ProjectCard project={project} />)}
+	</div>
+</section>

@@ -1,0 +1,125 @@
+---
+import SocialIcon from '../components/SocialIcon.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { getLocaleFromUrl, getSiteConfig } from '../config/site';
+
+interface Props {
+	kicker?: string;
+	title: string;
+	description?: string;
+}
+
+const { description, kicker, title } = Astro.props;
+const siteConfig = getSiteConfig(getLocaleFromUrl(Astro.url));
+const page = siteConfig.pages.resume;
+const resume = siteConfig.resume;
+type ResumeItemLink = { name: string; href: string };
+const getItemLinks = (item: { link?: readonly ResumeItemLink[] }) => item.link ?? [];
+---
+
+<section class="mx-auto max-w-6xl px-5 py-20 md:py-28">
+	<SectionHeading kicker={kicker} title={title} description={description} />
+	<div class="grid gap-10 lg:grid-cols-[0.34fr_0.66fr]">
+	<aside class="space-y-4">
+		<div class="rounded-lg border border-white/10 bg-white/[0.03] p-6">
+			<p class="text-sm uppercase tracking-[0.24em] text-zinc-500">{page.profileLabel}</p>
+			<p class="mt-4 text-sm leading-7 text-zinc-300">{resume.summary}</p>
+			<div class="mt-5 grid gap-4">
+				{resume.details.map((item) => (
+					<div>
+						<p class="text-xs uppercase tracking-[0.2em] text-zinc-600">{item.label}</p>
+						<p class="mt-1 text-sm text-white">{item.value}</p>
+					</div>
+				))}
+			</div>
+			{resume.files.length > 0 && (
+				<div class="mt-6 grid gap-2">
+					{resume.files.map((file) => (
+						<a
+							href={file.href}
+							download
+							class="inline-flex w-full items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-zinc-200"
+						>
+							{file.label}
+						</a>
+					))}
+				</div>
+			)}
+		</div>
+		<div class="rounded-lg border border-white/10 bg-white/[0.03] p-6">
+			<p class="text-sm uppercase tracking-[0.24em] text-zinc-500">{page.emailLabel}</p>
+			<a href={`mailto:${siteConfig.email}`} class="mt-3 inline-flex items-center gap-2 text-sm text-white">
+				<SocialIcon icon={siteConfig.emailIcon} label="Email" class="h-6 w-6" />
+				{siteConfig.email}
+			</a>
+		</div>
+		<div class="rounded-lg border border-white/10 bg-white/[0.03] p-6">
+			<p class="text-sm uppercase tracking-[0.24em] text-zinc-500">{page.linksLabel}</p>
+			<div class="mt-4 grid gap-2">
+				{resume.links.map((item) => (
+					<a href={item.href} class="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-300 transition hover:border-white/30 hover:text-white">
+						{item.label}
+					</a>
+				))}
+			</div>
+		</div>
+		<div class="rounded-lg border border-white/10 bg-white/[0.03] p-6">
+			<p class="text-sm uppercase tracking-[0.24em] text-zinc-500">{page.skillsLabel}</p>
+			<div class="mt-3 flex flex-wrap gap-2">
+				{siteConfig.skills.map((skill) => (
+					<span class="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-300">{skill}</span>
+				))}
+			</div>
+		</div>
+		<div class="rounded-lg border border-white/10 bg-white/[0.03] p-6">
+			<p class="text-sm uppercase tracking-[0.24em] text-zinc-500">{page.highlightsLabel}</p>
+			<ul class="mt-4 space-y-3">
+				{resume.highlights.map((item) => (
+					<li class="flex gap-3 text-sm leading-6 text-zinc-300">
+						<span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-white"></span>
+						<span>{item}</span>
+					</li>
+				))}
+			</ul>
+		</div>
+	</aside>
+	<div class="space-y-8">
+		{resume.sections.map((section) => (
+			<section>
+				<h2 class="mb-4 text-2xl font-semibold text-white">{section.title}</h2>
+				<div class="space-y-4">
+					{section.items.map((item) => (
+						<article class="rounded-lg border border-white/10 bg-white/[0.03] p-6">
+							<p class="text-sm text-zinc-500">{item.period}</p>
+							<h3 class="mt-3 text-2xl font-semibold text-white">{item.title}</h3>
+							<p class="mt-1 text-sm text-zinc-400">{item.org}</p>
+							<p class="mt-4 text-sm leading-6 text-zinc-400">{item.description}</p>
+							{item.points.length > 0 && (
+								<div class="mt-4 flex flex-wrap gap-2">
+									{item.points.map((point) => (
+										<span class="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-300">{point}</span>
+									))}
+								</div>
+							)}
+							{getItemLinks(item).length > 0 && (
+								<div class="mt-5 flex flex-wrap gap-3">
+									{getItemLinks(item).map((link) => (
+										<a
+											href={link.href}
+											target="_blank"
+											rel="noreferrer"
+											class="rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white transition hover:border-white/40 hover:bg-white/10"
+										>
+											{link.name}
+										</a>
+									))}
+								</div>
+							)}
+						</article>
+					))}
+				</div>
+			</section>
+		))}
+	</div>
+	</div>
+</section>

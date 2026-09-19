@@ -1,0 +1,221 @@
+---
+interface Props {
+	locale: 'zh' | 'en';
+	today: {
+		timeZone: string;
+		dateLocale: string;
+		greetings: readonly string[];
+	};
+}
+
+const { locale, today } = Astro.props;
+const { dateLocale, greetings, timeZone } = today;
+---
+
+<script define:vars={{ dateLocale, greetings, locale, timeZone }} data-astro-rerun>
+	const homeEnhancementsState = window;
+	const steamLabels = {
+		zh: {
+			playing: 'Steam：正在玩 {game}',
+			status: 'Steam：{status}',
+			unavailable: 'Steam：暂时不可用',
+			states: {
+				Offline: '离线',
+				Online: '在线',
+				Busy: '忙碌',
+				Away: '离开',
+				Snooze: '暂离',
+				'Looking to trade': '在线',
+				'Looking to play': '在线',
+				Unavailable: '暂时不可用',
+				'Not configured': '未配置',
+				Unknown: '未知',
+			},
+		},
+		en: {
+			playing: 'Steam: Playing {game}',
+			status: 'Steam: {status}',
+			unavailable: 'Steam: unavailable',
+			states: {
+				Offline: 'Offline',
+				Online: 'Online',
+				Busy: 'Busy',
+				Away: 'Away',
+				Snooze: 'Snooze',
+				'Looking to trade': 'Online',
+				'Looking to play': 'Online',
+				Unavailable: 'Unavailable',
+				'Not configured': 'Not configured',
+				Unknown: 'Unknown',
+			},
+		},
+	};
+
+	const cleanupHomeEnhancements = () => {
+		if (homeEnhancementsState.homeEnhancementsInterval) {
+			window.clearInterval(homeEnhancementsState.homeEnhancementsInterval);
+			delete homeEnhancementsState.homeEnhancementsInterval;
+		}
+		if (homeEnhancementsState.homeEnhancementsSteamInterval) {
+			window.clearInterval(homeEnhancementsState.homeEnhancementsSteamInterval);
+			delete homeEnhancementsState.homeEnhancementsSteamInterval;
+		}
+	};
+
+	homeEnhancementsState.homeEnhancementsConfig = {
+		dateLocale,
+		greetings,
+		steam: steamLabels[locale],
+		timeZone,
+	};
+
+	const mountHomeEnhancements = () => {
+		const config = homeEnhancementsState.homeEnhancementsConfig;
+		const greeting = document.querySelector('[data-time-greeting]');
+		const time = document.querySelector('[data-melbourne-time]');
+		const steamStatus = document.querySelector('[data-steam-status]');
+		const steamStatusText = document.querySelector('[data-steam-status-text]');
+		const steamStatusDot = document.querySelector('[data-steam-status-dot]');
+		const steamGameLogo = document.querySelector('[data-steam-game-logo]');
+		const visitorCount = document.querySelector('[data-visitor-count]');
+
+		cleanupHomeEnhancements();
+		if (!greeting && !time && !steamStatus && !visitorCount) return;
+
+		const formatter = new Intl.DateTimeFormat(config.dateLocale, {
+			timeZone: config.timeZone,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false,
+		});
+
+		const hourFormatter = new Intl.DateTimeFormat('en-AU', {
+			timeZone: config.timeZone,
+			hour: 'numeric',
+			hour12: false,
+		});
+
+		const updateGreeting = () => {
+			if (!greeting) return;
+
+			const hour = Number(hourFormatter.format(new Date()));
+			const index = hour < 5 ? 0 : hour < 8 ? 1 : hour < 11 ? 2 : hour < 13 ? 3 : hour < 18 ? 4 : 5;
+			greeting.textContent = config.greetings[index] ?? config.greetings.at(-1) ?? greeting.textContent;
+		};
+
+		const updateTime = () => {
+			if (!time) return;
+			time.textContent = formatter.format(new Date());
+		};
+
+		const setSteamStatus = ({ text, href, logoUrl, logoAlt, active }) => {
+			if (!steamStatus) return;
+			if (steamStatusText) steamStatusText.textContent = text;
+			else steamStatus.textContent = text;
+			if (href) {
+				steamStatus.href = href;
+				steamStatus.removeAttribute('aria-disabled');
+			} else {
+				steamStatus.removeAttribute('href');
+				steamStatus.setAttribute('aria-disabled', 'true');
+			}
+
+			if (steamStatusDot) {
+				steamStatusDot.classList.toggle('bg-emerald-400', Boolean(active));
+				steamStatusDot.classList.toggle('shadow-[0_0_10px_rgba(52,211,153,0.75)]', Boolean(active));
+				steamStatusDot.classList.toggle('bg-zinc-600', !active);
+			}
+
+			if (!steamGameLogo) return;
+			if (logoUrl) {
+				steamGameLogo.src = logoUrl;
+				steamGameLogo.alt = logoAlt ?? '';
+				steamGameLogo.hidden = false;
+			} else {
+				steamGameLogo.hidden = true;
+				steamGameLogo.removeAttribute('src');
+				steamGameLogo.alt = '';
+			}
+		};
+
+		const updateSteamStatus = async () => {
+			if (!steamStatus) return;
+
+			try {
+				const response = await fetch('/api/steam-status', { cache: 'no-store' });
+				if (!response.ok) throw new Error('Steam status request failed.');
+
+				const status = await response.json();
+				if (status.playing && status.gameName) {
+					setSteamStatus({
+						text: config.steam.playing.replace('{game}', status.gameName),
+						href: status.gameId ? `https://store.steampowered.com/app/${status.gameId}` : status.profileUrl,
+						logoUrl: status.gameIconUrl ?? status.gameLogoUrl,
+						logoAlt: status.gameName,
+						active: true,
+					});
+					return;
+				}
+
+				const state = config.steam.states[status.personaStateLabel] ?? status.personaStateLabel ?? config.steam.states.Unknown;
+				setSteamStatus({
+					text: config.steam.status.replace('{status}', state),
+					href: status.profileUrl,
+					logoUrl: undefined,
+					active: status.personaStateLabel && status.personaStateLabel !== 'Offline',
+				});
+			} catch {
+				setSteamStatus({
+					text: config.steam.unavailable,
+					href: undefined,
+					logoUrl: undefined,
+					active: false,
+				});
+			}
+		};
+
+		const updateVisitorCount = async () => {
+			if (!visitorCount) return;
+
+			const template = visitorCount.dataset.template;
+			const fallbackCount = visitorCount.dataset.fallbackCount;
+			if (!template) return;
+
+			try {
+				const response = await fetch('/api/visitor-count', { cache: 'no-store' });
+				if (!response.ok) throw new Error('Visitor count request failed.');
+
+				const data = await response.json();
+				const count = data.ok && Number.isSafeInteger(data.count) ? data.count : fallbackCount;
+				if (count !== undefined && count !== null && count !== '') {
+					visitorCount.textContent = template.replace('{count}', String(count));
+				}
+			} catch {
+				if (fallbackCount) visitorCount.textContent = template.replace('{count}', fallbackCount);
+			}
+		};
+
+		updateGreeting();
+		updateTime();
+		updateSteamStatus();
+		updateVisitorCount();
+
+		homeEnhancementsState.homeEnhancementsInterval = window.setInterval(() => {
+			updateGreeting();
+			updateTime();
+		}, 1000);
+		homeEnhancementsState.homeEnhancementsSteamInterval = window.setInterval(updateSteamStatus, 60000);
+	};
+
+	mountHomeEnhancements();
+
+	if (!homeEnhancementsState.homeEnhancementsEventsReady) {
+		homeEnhancementsState.homeEnhancementsEventsReady = true;
+		document.addEventListener('astro:page-load', mountHomeEnhancements);
+		document.addEventListener('astro:before-swap', cleanupHomeEnhancements);
+	}
+</script>

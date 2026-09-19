@@ -1,0 +1,39 @@
+---
+import { getCollection, render } from 'astro:content';
+import MarkdownLayout from '../../layouts/MarkdownLayout.astro';
+import { getBacklinks } from '../../utils/knowledge';
+import { getEntryDescription, getEntryTitle } from '../../utils/content';
+import { cleanContentSlug } from '../../config/i18n';
+import { getReadingStats } from '../../utils/reading-stats';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+	const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
+
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: { post },
+	}));
+}
+
+const { post } = Astro.props;
+const allPosts = await getCollection('blog');
+const backlinks = getBacklinks(post.id, allPosts);
+const { Content } = await render(post);
+const cleanSlug = cleanContentSlug(post.id);
+const heroTransitionName = `blog-title-${cleanSlug.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+---
+
+<MarkdownLayout
+	title={getEntryTitle(post)}
+	description={getEntryDescription(post)}
+	date={post.data.pubDate}
+	tags={post.data.tags}
+	cover={post.data.cover}
+	readingStats={getReadingStats(post.body)}
+	backlinks={backlinks}
+	heroTransitionName={heroTransitionName}
+>
+	<Content />
+</MarkdownLayout>

@@ -1,0 +1,249 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { ClientRouter } from 'astro:transitions';
+import { getLocaleFromUrl, getSiteConfig, locales, localizePath } from '../config/site';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const locale = getLocaleFromUrl(Astro.url);
+const siteConfig = getSiteConfig(locale);
+const { title = siteConfig.name, description = siteConfig.description } = Astro.props;
+
+const pageTitle = title === siteConfig.name ? title : `${title} | ${siteConfig.name}`;
+const currentPath = (Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/').replace(/-en(?=\/?$)/, '');
+const background = siteConfig.background;
+const rain = background.rain;
+const backgroundImageStyle = [
+	`background-image: url("${background.image}")`,
+	`filter: blur(${background.blur})`,
+	`opacity: ${background.opacity}`,
+	`transform: scale(${background.scale})`,
+].join('; ');
+const backgroundOverlayStyle = `background: ${background.overlay}`;
+---
+
+<!doctype html>
+<html lang={locales[locale].lang}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<link rel="alternate" hreflang="zh-CN" href={localizePath('zh', currentPath)} />
+		<link rel="alternate" hreflang="en" href={localizePath('en', currentPath)} />
+		<ClientRouter />
+		<title>{pageTitle}</title>
+	</head>
+	<body class="min-h-screen bg-black text-white antialiased">
+		<div class="pointer-events-none fixed inset-0 z-0 overflow-hidden" transition:persist="site-background">
+			<div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style={backgroundImageStyle}></div>
+			<div class="absolute inset-0" style={backgroundOverlayStyle}></div>
+			{rain.enabled && (
+				<canvas
+					data-rain-canvas
+					data-mode={rain.mode}
+					data-density={rain.density}
+					data-speed={rain.speed}
+					data-drop-color={rain.dropColor}
+					data-ripple-color={rain.rippleColor}
+					data-max-drops={rain.maxDrops}
+					data-max-ripples={rain.maxRipples}
+					class="absolute inset-0 h-full w-full"
+					aria-hidden="true"
+				></canvas>
+			)}
+		</div>
+		<Header />
+		<main class="relative z-10" transition:name="page-content" transition:animate="slide">
+			<slot />
+		</main>
+		<div class="relative z-10">
+			<Footer />
+		</div>
+	</body>
+</html>
+
+<script>
+	const canvas = document.querySelector<HTMLCanvasElement>('[data-rain-canvas]');
+	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	if (canvas && !reduceMotion.matches && !canvas.dataset.rainReady) {
+		canvas.dataset.rainReady = 'true';
+		const context = canvas.getContext('2d');
+		if (!context) throw new Error('Rain canvas context is unavailable.');
+
+		const mode = canvas.dataset.mode ?? 'falling';
+		const density = Number(canvas.dataset.density ?? 0.7);
+		const speed = Number(canvas.dataset.speed ?? 1);
+		const dropColor = canvas.dataset.dropColor ?? 'rgba(210, 230, 255, 0.5)';
+		const rippleColor = canvas.dataset.rippleColor ?? 'rgba(210, 230, 255, 0.34)';
+		const maxDrops = Number(canvas.dataset.maxDrops ?? 170);
+		const maxRipples = Number(canvas.dataset.maxRipples ?? 36);
+		const fallingDrops: Array<{ x: number; y: number; length: number; velocity: number; alpha: number; drift: number; impactY: number }> = [];
+		const frontDrops: Array<{ x: number; y: number; radius: number; maxRadius: number; velocity: number; alpha: number; wobble: number }> = [];
+		const ripples: Array<{ x: number; y: number; radius: number; alpha: number; growth: number; stretch: number }> = [];
+		let animationFrame = 0;
+		let width = 0;
+		let height = 0;
+		let pixelRatio = 1;
+
+		const resizeCanvas = () => {
+			pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+			width = window.innerWidth;
+			height = window.innerHeight;
+			canvas.width = Math.floor(width * pixelRatio);
+			canvas.height = Math.floor(height * pixelRatio);
+			canvas.style.width = `${width}px`;
+			canvas.style.height = `${height}px`;
+			context?.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+		};
+
+		const spawnFallingDrop = () => {
+			if (fallingDrops.length >= maxDrops) return;
+			fallingDrops.push({
+				x: -width * 0.08 + Math.random() * width * 1.16,
+				y: -height * 0.18 - Math.random() * 80,
+				length: 16 + Math.random() * 28,
+				velocity: (9 + Math.random() * 8) * speed,
+				alpha: 0.22 + Math.random() * 0.42,
+				drift: -2.6 - Math.random() * 2.2,
+				impactY: Math.random() * height,
+			});
+		};
+
+		const spawnFrontDrop = () => {
+			if (frontDrops.length >= maxDrops) return;
+			frontDrops.push({
+				x: Math.random() * width,
+				y: Math.random() * height,
+				radius: 0.4 + Math.random() * 1.8,
+				maxRadius: 10 + Math.random() * 7,
+				velocity: (0.22 + Math.random() * 0.44) * speed,
+				alpha: 0.08 + Math.random() * 0.22,
+				wobble: Math.random() * Math.PI * 2,
+			});
+		};
+
+		const spawnRipple = (x: number, y: number, velocity: number, stretch = 1.8) => {
+			if (ripples.length > maxRipples) ripples.shift();
+			ripples.push({
+				x,
+				y,
+				radius: 2,
+				alpha: Math.min(0.42, 0.16 + velocity / 60),
+				growth: 0.9 + Math.random() * 0.65,
+				stretch,
+			});
+		};
+
+		const drawFallingRain = () => {
+			const spawnCount = Math.max(2, Math.round(density * 8));
+			for (let index = 0; index < spawnCount; index += 1) {
+				if (Math.random() < density * 0.52) spawnFallingDrop();
+			}
+
+			for (let index = fallingDrops.length - 1; index >= 0; index -= 1) {
+				const drop = fallingDrops[index];
+				drop.y += drop.velocity;
+				drop.x += drop.drift;
+				context.save();
+				context.globalAlpha = drop.alpha;
+				context.strokeStyle = dropColor;
+				context.lineWidth = 1;
+				context.beginPath();
+				context.moveTo(drop.x, drop.y);
+				context.lineTo(drop.x + drop.drift * 1.8, drop.y + drop.length);
+				context.stroke();
+				context.restore();
+
+				if (drop.y >= drop.impactY || drop.y > height + 80 || drop.x < -120) {
+					spawnRipple(drop.x, Math.max(8, Math.min(drop.y + drop.length, height - 8)), drop.velocity, 1.9);
+					fallingDrops.splice(index, 1);
+				}
+			}
+		};
+
+		const drawFrontRain = () => {
+			const spawnCount = Math.max(2, Math.round(density * 6));
+			for (let index = 0; index < spawnCount; index += 1) {
+				if (Math.random() < density * 0.38) spawnFrontDrop();
+			}
+
+			for (let index = frontDrops.length - 1; index >= 0; index -= 1) {
+				const drop = frontDrops[index];
+				drop.radius += drop.velocity;
+				drop.alpha += 0.008 * speed;
+				drop.wobble += 0.035;
+				const offsetX = Math.cos(drop.wobble) * drop.radius * 0.08;
+				const offsetY = Math.sin(drop.wobble) * drop.radius * 0.08;
+
+				context.save();
+				context.globalAlpha = Math.min(drop.alpha, 0.5);
+				context.strokeStyle = dropColor;
+				context.lineWidth = 1;
+				context.beginPath();
+				context.arc(drop.x + offsetX, drop.y + offsetY, drop.radius, 0, Math.PI * 2);
+				context.stroke();
+				context.restore();
+
+				if (drop.radius > drop.maxRadius) {
+					spawnRipple(drop.x, drop.y, drop.radius * 2.2, 1);
+					frontDrops.splice(index, 1);
+				}
+			}
+		};
+
+		const drawRipples = () => {
+			for (let index = ripples.length - 1; index >= 0; index -= 1) {
+				const ripple = ripples[index];
+				ripple.radius += ripple.growth;
+				ripple.alpha *= 0.965;
+				context.save();
+				context.globalAlpha = ripple.alpha;
+				context.strokeStyle = rippleColor;
+				context.lineWidth = 1;
+				context.beginPath();
+				context.ellipse(ripple.x, ripple.y, ripple.radius * ripple.stretch, ripple.radius * 0.48, 0, 0, Math.PI * 2);
+				context.stroke();
+				context.restore();
+
+				if (ripple.alpha < 0.015 || ripple.radius > 56) {
+					ripples.splice(index, 1);
+				}
+			}
+		};
+
+		const draw = () => {
+			context.clearRect(0, 0, width, height);
+
+			if (mode === 'front') drawFrontRain();
+			else drawFallingRain();
+			drawRipples();
+
+			animationFrame = window.requestAnimationFrame(draw);
+		};
+
+		resizeCanvas();
+		window.addEventListener('resize', resizeCanvas);
+		animationFrame = window.requestAnimationFrame(draw);
+
+		reduceMotion.addEventListener('change', (event) => {
+			if (event.matches) {
+				window.cancelAnimationFrame(animationFrame);
+				context?.clearRect(0, 0, width, height);
+			} else {
+				animationFrame = window.requestAnimationFrame(draw);
+			}
+		});
+	}
+</script>

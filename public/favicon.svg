@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Site icon">
+	<rect width="128" height="128" rx="28" fill="#050505" />
+	<circle cx="64" cy="64" r="42" fill="#111113" stroke="#2f2f35" stroke-width="6" />
+	<path
+		d="M40 73c8 11 40 11 48 0"
+		fill="none"
+		stroke="#f8fafc"
+		stroke-linecap="round"
+		stroke-width="8"
+	/>
+	<circle cx="49" cy="56" r="5" fill="#f8fafc" />
+	<circle cx="79" cy="56" r="5" fill="#f8fafc" />
+	<path
+		d="M88 35l5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2 5-10Z"
+		fill="#60a5fa"
+	/>
+</svg>

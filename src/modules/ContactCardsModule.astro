@@ -1,0 +1,39 @@
+---
+import SocialIcon from '../components/SocialIcon.astro';
+import { getLocaleFromUrl, getSiteConfig } from '../config/site';
+
+interface Props {
+	kicker?: string;
+	heading: string;
+	intro?: string;
+}
+
+const { heading, intro, kicker } = Astro.props;
+const siteConfig = getSiteConfig(getLocaleFromUrl(Astro.url));
+---
+
+<section class="mx-auto max-w-6xl px-5 py-20 md:py-28">
+	<p class="text-sm font-medium uppercase tracking-[0.28em] text-zinc-500">{kicker}</p>
+	<h1 class="mt-6 max-w-4xl whitespace-pre-line text-5xl font-semibold tracking-normal text-white md:text-7xl">
+		{heading}
+	</h1>
+	{intro && <p class="mt-6 max-w-2xl whitespace-pre-line text-lg leading-8 text-zinc-400">{intro}</p>}
+	<div class="mt-10 grid gap-4 md:grid-cols-3">
+		<a href={`mailto:${siteConfig.email}`} class="rounded-lg border border-white/10 bg-white/[0.03] p-6 transition hover:border-white/30">
+			<p class="inline-flex items-center gap-2 text-sm text-zinc-500">
+				<SocialIcon icon={siteConfig.emailIcon} label="Email" class="h-6 w-6" />
+				Email
+			</p>
+			<p class="mt-3 break-words text-lg font-semibold text-white">{siteConfig.email}</p>
+		</a>
+		{siteConfig.socials.slice(0, 2).map((item) => (
+			<a href={item.href} target="_blank" class="rounded-lg border border-white/10 bg-white/[0.03] p-6 transition hover:border-white/30">
+				<p class="inline-flex items-center gap-2 text-sm text-zinc-500">
+					<SocialIcon icon={item.icon} label={item.label} class="h-6 w-6" />
+					{item.label}
+				</p>
+				<p class="mt-3 text-lg font-semibold text-white">{siteConfig.ui.socialCardCta}</p>
+			</a>
+		))}
+	</div>
+</section>

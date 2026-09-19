@@ -1,0 +1,126 @@
+---
+import BlogCard from './BlogCard.astro';
+import { getEntryDescription, getEntryTitle } from '../utils/content';
+
+interface Post {
+	id: string;
+	body?: string;
+	data: {
+		title: string;
+		description: string;
+		pubDate: Date;
+		tags: string[];
+		cover?: string;
+	};
+}
+
+interface Props {
+	posts: Post[];
+	labels: {
+		search: string;
+		all: string;
+		empty: string;
+	};
+}
+
+const { posts, labels } = Astro.props;
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) => a.localeCompare(b));
+---
+
+<div data-blog-filter>
+	<div class="mb-8 rounded-lg border border-white/10 bg-white/[0.03] p-4 md:p-5">
+		<label class="sr-only" for="blog-search">{labels.search}</label>
+		<input
+			id="blog-search"
+			data-blog-search
+			type="search"
+			placeholder={labels.search}
+			class="w-full rounded-lg border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-white/30"
+		/>
+		<div class="mt-4 flex flex-wrap gap-2">
+			<button
+				type="button"
+				data-blog-tag="all"
+				class="rounded-full border border-white/30 bg-white px-4 py-2 text-xs font-medium text-black transition"
+			>
+				{labels.all}
+			</button>
+			{tags.map((tag) => (
+				<button
+					type="button"
+					data-blog-tag={tag}
+					class="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium text-zinc-300 transition hover:border-white/30 hover:text-white"
+				>
+					#{tag}
+				</button>
+			))}
+		</div>
+	</div>
+
+	<div data-blog-list>
+		{posts.map((post) => (
+			<div
+				data-blog-card
+				data-search={`${getEntryTitle(post)} ${getEntryDescription(post)} ${post.data.tags.join(' ')}`.toLowerCase()}
+				data-tags={post.data.tags.join('\u001f').toLowerCase()}
+			>
+				<BlogCard post={post} />
+			</div>
+		))}
+	</div>
+
+	<p data-blog-empty class="hidden rounded-lg border border-white/10 bg-white/[0.03] p-6 text-sm text-zinc-400">
+		{labels.empty}
+	</p>
+</div>
+
+<script>
+	document.querySelectorAll('[data-blog-filter]').forEach((root) => {
+		const search = root.querySelector<HTMLInputElement>('[data-blog-search]');
+		const cards = [...root.querySelectorAll<HTMLElement>('[data-blog-card]')];
+		const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-blog-tag]')];
+		const empty = root.querySelector<HTMLElement>('[data-blog-empty]');
+		let activeTag = 'all';
+
+		const setButtonState = () => {
+			buttons.forEach((button) => {
+				const isActive = button.dataset.blogTag === activeTag;
+				button.classList.toggle('border-white/30', isActive);
+				button.classList.toggle('bg-white', isActive);
+				button.classList.toggle('text-black', isActive);
+				button.classList.toggle('border-white/10', !isActive);
+				button.classList.toggle('bg-white/[0.04]', !isActive);
+				button.classList.toggle('text-zinc-300', !isActive);
+			});
+		};
+
+		const filterCards = () => {
+			const query = search?.value.trim().toLowerCase() ?? '';
+			let visibleCount = 0;
+
+			cards.forEach((card) => {
+				const searchableText = card.dataset.search ?? '';
+				const tagList = (card.dataset.tags ?? '').split('\u001f').filter(Boolean);
+				const matchesQuery = !query || searchableText.includes(query);
+				const matchesTag = activeTag === 'all' || tagList.includes(activeTag.toLowerCase());
+				const isVisible = matchesQuery && matchesTag;
+
+				card.hidden = !isVisible;
+				if (isVisible) visibleCount += 1;
+			});
+
+			if (empty) empty.hidden = visibleCount > 0;
+			setButtonState();
+		};
+
+		search?.addEventListener('input', filterCards);
+		buttons.forEach((button) => {
+			button.addEventListener('click', () => {
+				activeTag = button.dataset.blogTag ?? 'all';
+				filterCards();
+			});
+		});
+
+		filterCards();
+	});
+</script>
