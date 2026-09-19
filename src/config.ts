@@ -70,12 +70,8 @@ export const siteConfig: SiteConfig = {
 
 		// 支持单张图片或图片数组，当数组长度 > 1 时自动启用轮播
 		src: {
-			desktop: [
-				"/img/bg.jpg",
-			], // 桌面横幅图片
-			mobile: [
-				"/img/bg.jpg",
-			], // 移动横幅图片
+			desktop: ["/img/bg.jpg"], // 桌面横幅图片
+			mobile: ["/img/bg.jpg"], // 移动横幅图片
 		}, // 使用本地横幅图片
 
 		position: "center", // 等同于 object-position，仅支持 'top', 'center', 'bottom'。默认为 'center'
@@ -176,9 +172,24 @@ export const navBarConfig: NavBarConfig = {
 			url: "/friends/",
 			icon: "material-symbols:link",
 			children: [
-				{ name: "GitHub", url: "https://github.com/PhantomDaze", external: true, icon: "fa6-brands:github" },
-				{ name: "Bilibili", url: "https://space.bilibili.com/1590285979", external: true, icon: "fa6-brands:bilibili" },
-				{ name: "Gitee", url: "https://gitee.com/matsuzakayuki/Mizuki", external: true, icon: "mdi:git" },
+				{
+					name: "GitHub",
+					url: "https://github.com/PhantomDaze",
+					external: true,
+					icon: "fa6-brands:github",
+				},
+				{
+					name: "Bilibili",
+					url: "https://space.bilibili.com/1590285979",
+					external: true,
+					icon: "fa6-brands:bilibili",
+				},
+				{
+					name: "Gitee",
+					url: "https://gitee.com/matsuzakayuki/Mizuki",
+					external: true,
+					icon: "mdi:git",
+				},
 			],
 		},
 	],

@@ -7,8 +7,7 @@ import ConfigCarrier from "@components/ConfigCarrier.astro";
 import MusicPlayer from "@components/widget/MusicPlayer.svelte";
 import Pio from "@components/widget/Pio.svelte"; // 使用 Svelte 版本的 Pio 组件
 import { profileConfig, siteConfig } from "@/config";
-import { widgetConfigs } from "../config";
-import { umamiConfig } from "../config";
+import { umamiConfig, widgetConfigs } from "../config";
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
@@ -28,7 +27,6 @@ import "../styles/wallpaper-navbar-transparent.css";
 import "../styles/fancybox-custom.css";
 import "../styles/mobile-transition-fix.css";
 import "../styles/mobile-post-list-fix.css";
-
 
 interface Props {
 	title?: string;

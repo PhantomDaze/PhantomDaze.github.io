@@ -203,7 +203,8 @@ export const zh_CN: Translation = {
 	[Key.rssCopyLink]: "复制链接",
 	[Key.rssLatestPosts]: "最新文章",
 	[Key.rssWhatIsRSS]: "什么是 RSS？",
-	[Key.rssWhatIsRSSDescription]: "RSS（Really Simple Syndication）是一种用于发布经常更新内容的标准格式。通过 RSS，你可以：",
+	[Key.rssWhatIsRSSDescription]:
+		"RSS（Really Simple Syndication）是一种用于发布经常更新内容的标准格式。通过 RSS，你可以：",
 	[Key.rssBenefit1]: "及时获取网站最新内容，无需手动访问",
 	[Key.rssBenefit2]: "在一个地方管理多个网站的订阅",
 	[Key.rssBenefit3]: "避免错过重要更新和文章",
@@ -221,12 +222,14 @@ export const zh_CN: Translation = {
 	[Key.atomCopyLink]: "复制链接",
 	[Key.atomLatestPosts]: "最新文章",
 	[Key.atomWhatIsAtom]: "什么是 Atom？",
-	[Key.atomWhatIsAtomDescription]: "Atom联合格式（Atom Syndication Format）是一个基于XML的标准，用于描述订阅源及其信息项。通过 Atom，你可以：",
+	[Key.atomWhatIsAtomDescription]:
+		"Atom联合格式（Atom Syndication Format）是一个基于XML的标准，用于描述订阅源及其信息项。通过 Atom，你可以：",
 	[Key.atomBenefit1]: "及时获取网站最新内容，无需手动访问",
 	[Key.atomBenefit2]: "在一个地方管理多个网站的订阅",
 	[Key.atomBenefit3]: "避免错过重要更新和文章",
 	[Key.atomBenefit4]: "享受无广告的纯净阅读体验",
-	[Key.atomHowToUse]: "推荐使用 Feedly、Inoreader 或其他 Atom 阅读器来订阅本站。",
+	[Key.atomHowToUse]:
+		"推荐使用 Feedly、Inoreader 或其他 Atom 阅读器来订阅本站。",
 	[Key.atomCopied]: "Atom 链接已复制到剪贴板！",
 	[Key.atomCopyFailed]: "复制失败，请手动复制链接",
 };

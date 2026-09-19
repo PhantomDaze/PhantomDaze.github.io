@@ -1,5 +1,5 @@
 <script>
-import { onMount, onDestroy } from "svelte";
+import { onDestroy, onMount } from "svelte";
 import { pioConfig } from "@/config";
 
 // 将配置转换为 Pio 插件需要的格式

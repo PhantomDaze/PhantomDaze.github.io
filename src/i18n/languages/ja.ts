@@ -115,7 +115,7 @@ export const ja: Translation = {
 	[Key.projectsFeatured]: "注目プロジェクト",
 	[Key.projectsPlanned]: "予定",
 	[Key.projectsDemo]: "ライブデモ",
-	[Key.projectsSource]: "ソースコード",	// [Key.projectsGitee]: "Gitee",  // Giteeサポートを削除
+	[Key.projectsSource]: "ソースコード", // [Key.projectsGitee]: "Gitee",  // Giteeサポートを削除
 
 	// RSSページ
 	[Key.rss]: "RSSフィード",
@@ -157,7 +157,8 @@ export const ja: Translation = {
 	[Key.atomHowToUse]:
 		"Feedly、Inoreaderまたは他のAtomリーダーを使用してこのサイトを購読することを推奨します。",
 	[Key.atomCopied]: "Atomリンクがクリップボードにコピーされました！",
-	[Key.atomCopyFailed]: "コピーに失敗しました。手動でリンクをコピーしてください",
+	[Key.atomCopyFailed]:
+		"コピーに失敗しました。手動でリンクをコピーしてください",
 
 	// スキルページ
 	[Key.skills]: "スキル",
@@ -211,7 +212,7 @@ export const ja: Translation = {
 	[Key.projectsVisit]: "プロジェクトへ",
 	[Key.projectsGitHub]: "GitHub",
 	[Key.projectsGitee]: "Gitee",
-	
+
 	// その他
 	[Key.noData]: "データなし",
 

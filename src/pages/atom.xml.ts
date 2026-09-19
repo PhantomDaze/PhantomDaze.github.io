@@ -4,7 +4,7 @@ import type { APIContext, ImageMetadata } from "astro";
 import MarkdownIt from "markdown-it";
 import { parse as htmlParser } from "node-html-parser";
 import sanitizeHtml from "sanitize-html";
-import { siteConfig, profileConfig } from "@/config";
+import { profileConfig, siteConfig } from "@/config";
 import { getSortedPosts } from "@/utils/content-utils";
 
 const markdownParser = new MarkdownIt();
@@ -21,8 +21,10 @@ export async function GET(context: APIContext) {
 
 	// Use the same ordering as site listing (pinned first, then by published desc)
 	// 过滤掉加密文章和草稿文章
-	const posts = (await getSortedPosts()).filter((post) => !post.data.encrypted && post.data.draft !== true);
-	
+	const posts = (await getSortedPosts()).filter(
+		(post) => !post.data.encrypted && post.data.draft !== true,
+	);
+
 	// 创建Atom feed头部
 	let atomFeed = `<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -122,14 +124,14 @@ export async function GET(context: APIContext) {
     <author>
       <name>${profileConfig.name}</name>
     </author>`;
-    
-    // 添加分类标签
-    if (post.data.category) {
-      atomFeed += `
+
+		// 添加分类标签
+		if (post.data.category) {
+			atomFeed += `
     <category term="${post.data.category}"></category>`;
-    }
-    
-    atomFeed += `
+		}
+
+		atomFeed += `
   </entry>`;
 	}
 
@@ -140,7 +142,6 @@ export async function GET(context: APIContext) {
 	return new Response(atomFeed, {
 		headers: {
 			"Content-Type": "application/atom+xml; charset=utf-8",
-			
 		},
 	});
 }

@@ -91,13 +91,13 @@ class Sakura {
 			this.y = 0;
 			this.s = getRandom("s", this.config);
 			this.r = getRandom("r", this.config);
-			this.a = getRandom('a', this.config);
+			this.a = getRandom("a", this.config);
 		} else {
 			this.x = window.innerWidth;
 			this.y = getRandom("y", this.config);
 			this.s = getRandom("s", this.config);
 			this.r = getRandom("r", this.config);
-			this.a = getRandom('a', this.config);
+			this.a = getRandom("a", this.config);
 		}
 	}
 }
@@ -154,35 +154,29 @@ function getRandom(option: string, config: SakuraConfig): any {
 		case "r":
 			ret = Math.random() * 6;
 			break;
-		case 'a':
-			ret = config.opacity.min + Math.random() * (config.opacity.max - config.opacity.min);
+		case "a":
+			ret =
+				config.opacity.min +
+				Math.random() * (config.opacity.max - config.opacity.min);
 			break;
 		case "fnx":
 			random =
 				config.speed.horizontal.min +
 				Math.random() *
 					(config.speed.horizontal.max - config.speed.horizontal.min);
-			ret = function (x: number, y: number) {
-				return x + random;
-			};
+			ret = (x: number, y: number) => x + random;
 			break;
 		case "fny":
 			random =
 				config.speed.vertical.min +
 				Math.random() * (config.speed.vertical.max - config.speed.vertical.min);
-			ret = function (x: number, y: number) {
-				return y + random;
-			};
+			ret = (x: number, y: number) => y + random;
 			break;
 		case "fnr":
-			ret = function (r: number) {
-				return r + config.speed.rotation;
-			};
+			ret = (r: number) => r + config.speed.rotation;
 			break;
-		case 'fna':
-			ret = function (alpha: number) {
-				return alpha - config.speed.fadeSpeed * 0.01;
-			};
+		case "fna":
+			ret = (alpha: number) => alpha - config.speed.fadeSpeed * 0.01;
 			break;
 	}
 	return ret;

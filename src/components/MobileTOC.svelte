@@ -40,7 +40,7 @@ const generateTOC = () => {
 	headings.forEach((heading) => {
 		if (heading.id) {
 			const level = Number.parseInt(heading.tagName.charAt(1));
-			const text = (heading.textContent || '').replace(/#+\s*$/, '');
+			const text = (heading.textContent || "").replace(/#+\s*$/, "");
 			items.push({ id: heading.id, text, level });
 		}
 	});

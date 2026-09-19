@@ -150,7 +150,8 @@ export const zh_TW: Translation = {
 	[Key.atomBenefit2]: "在一個地方管理多個網站的訂閱",
 	[Key.atomBenefit3]: "避免錯過重要更新和文章",
 	[Key.atomBenefit4]: "享受無廣告的純淨閱讀體驗",
-	[Key.atomHowToUse]: "推薦使用 Feedly、Inoreader 或其他 Atom 閱讀器來訂閱本站。",
+	[Key.atomHowToUse]:
+		"推薦使用 Feedly、Inoreader 或其他 Atom 閱讀器來訂閱本站。",
 	[Key.atomCopied]: "Atom 鏈接已複製到剪貼板！",
 	[Key.atomCopyFailed]: "複製失敗，請手動複製鏈接",
 
@@ -204,7 +205,7 @@ export const zh_TW: Translation = {
 
 	// 项目展示页面
 	[Key.projectsGitee]: "Gitee",
-	
+
 	// 其他
 	[Key.noData]: "暫無數據",
 
