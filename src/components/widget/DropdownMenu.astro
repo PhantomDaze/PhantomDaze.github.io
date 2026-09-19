@@ -121,17 +121,17 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 <script>
 	// 键盘导航支持
 	document.addEventListener('DOMContentLoaded', function() {
-		const dropdowns = document.querySelectorAll('[data-dropdown]');
+		const dropdowns = document.querySelectorAll<HTMLElement>('[data-dropdown]');
 		
 		dropdowns.forEach(dropdown => {
-			const trigger = dropdown.querySelector('[data-dropdown-trigger]');
-			const menu = dropdown.querySelector('[data-dropdown-menu]');
-			const items = dropdown.querySelectorAll('.dropdown-item');
+			const trigger = dropdown.querySelector<HTMLElement>('[data-dropdown-trigger]');
+			const menu = dropdown.querySelector<HTMLElement>('[data-dropdown-menu]');
+			const items = dropdown.querySelectorAll<HTMLElement>('.dropdown-item');
 			
 			if (!trigger || !menu) return;
 			
 			// 键盘事件处理
-			trigger.addEventListener('keydown', function(e) {
+			trigger.addEventListener('keydown', function(e: KeyboardEvent) {
 				if (e.key === 'Enter' || e.key === ' ') {
 					e.preventDefault();
 					toggleDropdown(dropdown, trigger, menu);
@@ -148,7 +148,7 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 			
 			// 菜单项键盘导航
 			items.forEach((item, index) => {
-				item.addEventListener('keydown', function(e) {
+				item.addEventListener('keydown', function(e: KeyboardEvent) {
 					if (e.key === 'ArrowDown') {
 						e.preventDefault();
 						const nextIndex = (index + 1) % items.length;
@@ -166,11 +166,11 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 		});
 		
 		// 点击外部关闭下拉菜单
-		document.addEventListener('click', function(e) {
+		document.addEventListener('click', function(e: KeyboardEvent) {
 			dropdowns.forEach(dropdown => {
-				if (!dropdown.contains(e.target)) {
-					const trigger = dropdown.querySelector('[data-dropdown-trigger]');
-					const menu = dropdown.querySelector('[data-dropdown-menu]');
+				if (!dropdown.contains(e.target as Node)) {
+					const trigger = dropdown.querySelector<HTMLElement>('[data-dropdown-trigger]');
+					const menu = dropdown.querySelector<HTMLElement>('[data-dropdown-menu]');
 					if (trigger && menu) {
 						closeDropdown(dropdown, trigger, menu);
 					}

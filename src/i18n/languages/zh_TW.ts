@@ -203,8 +203,6 @@ export const zh_TW: Translation = {
 	[Key.timelineDuration]: "持續時間",
 
 	// 项目展示页面
-	[Key.projectsVisit]: "前往項目",
-	[Key.projectsGitHub]: "GitHub",
 	[Key.projectsGitee]: "Gitee",
 	
 	// 其他

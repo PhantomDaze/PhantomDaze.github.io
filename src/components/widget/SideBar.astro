@@ -128,7 +128,7 @@ function renderComponent(component: any, index: number, _components: any[]) {
 			const breakpoints = widgetManager.getBreakpoints();
 			const width = window.innerWidth;
 			
-			let deviceType: 'mobile' | 'tablet' | 'desktop';
+			let deviceType;
 			if (width < breakpoints.mobile) {
 				deviceType = 'mobile';
 			} else if (width < breakpoints.tablet) {

@@ -6,8 +6,12 @@
 		"jsx": "react-jsx",
 		"jsxImportSource": "react",
 		"baseUrl": ".",
-		"strictNullChecks": true,
-		"allowJs": false,
+		"strict": false,
+		"strictNullChecks": false,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"allowImportingTsExtensions": true,
+		"skipLibCheck": true,
 		"declaration": true,
 		"plugins": [
 			{

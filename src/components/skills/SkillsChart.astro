@@ -338,7 +338,7 @@ const calculatePercentage = (value: number, total: number) => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          const bar = entry.target;
+          const bar = entry.target as HTMLElement;
           const finalWidth = bar.getAttribute('data-final-width');
           if (finalWidth) {
             bar.style.setProperty('--final-width', finalWidth);

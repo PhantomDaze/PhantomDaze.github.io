@@ -118,6 +118,7 @@ export const en: Translation = {
 	[Key.projectsSource]: "Source Code",
 	[Key.projectsVisit]: "Visit Project",
 	[Key.projectsGitHub]: "GitHub",
+	[Key.projectsGitee]: "Gitee",
 
 	// RSS Page
 	[Key.rss]: "RSS Feed",

@@ -32,7 +32,7 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
         <div class="text-center text-neutral-400 mb-2.5 transition">
             {profileConfig.typewriter?.enable ? (
                 <TypewriterText 
-                    text={profileConfig.bio}
+                    text={profileConfig.bio || ""}
                     speed={profileConfig.typewriter.speed}
                     class="inline-block"
                 />

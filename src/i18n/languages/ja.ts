@@ -115,10 +115,7 @@ export const ja: Translation = {
 	[Key.projectsFeatured]: "注目プロジェクト",
 	[Key.projectsPlanned]: "予定",
 	[Key.projectsDemo]: "ライブデモ",
-	[Key.projectsSource]: "ソースコード",
-	[Key.projectsVisit]: "プロジェクトへ",
-	[Key.projectsGitHub]: "GitHub",
-	// [Key.projectsGitee]: "Gitee",  // Giteeサポートを削除
+	[Key.projectsSource]: "ソースコード",	// [Key.projectsGitee]: "Gitee",  // Giteeサポートを削除
 
 	// RSSページ
 	[Key.rss]: "RSSフィード",

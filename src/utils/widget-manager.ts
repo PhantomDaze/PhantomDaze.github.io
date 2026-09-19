@@ -24,7 +24,7 @@ export const WIDGET_COMPONENT_MAP = {
  * 负责管理侧边栏组件的动态加载、排序和渲染
  */
 export class WidgetManager {
-	private config: SidebarLayoutConfig;
+	config: SidebarLayoutConfig;
 	private enabledComponents: WidgetComponentConfig[];
 
 	constructor(config: SidebarLayoutConfig = sidebarLayoutConfig) {

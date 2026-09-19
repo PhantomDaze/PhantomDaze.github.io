@@ -27,7 +27,7 @@ document.addEventListener("click", function (e: MouseEvent) {
             const lineElements = codeEle.querySelectorAll('span.line');
             if (lineElements.length > 0) {
                 // 对于有行结构的代码块，精确处理每一行
-                const lines = [];
+                const lines: string[] = [];
                 for (let i = 0; i < lineElements.length; i++) {
                     const lineElement = lineElements[i];
                     // 直接获取文本内容，不添加额外处理
@@ -40,7 +40,7 @@ document.addEventListener("click", function (e: MouseEvent) {
                 // 对于没有行结构的代码块
                 const codeElements = codeEle.querySelectorAll('.code:not(summary *)');
                 if (codeElements.length > 0) {
-                    const lines = [];
+                    const lines: string[] = [];
                     for (let i = 0; i < codeElements.length; i++) {
                         const el = codeElements[i];
                         const lineText = el.textContent || '';

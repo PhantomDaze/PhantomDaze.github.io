@@ -1,3 +1,5 @@
+export {};
+
 declare global {
 	interface HTMLElementTagNameMap {
 		"table-of-contents": HTMLElement & {
@@ -17,6 +19,9 @@ declare global {
 		};
 
 		mobileTOCInit?: () => void;
+		closeAnnouncement?: () => void;
+		iconifyLoaded?: boolean;
+		initSemifullScrollDetection?: () => void;
 	}
 }
 
