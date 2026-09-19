@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>PhantomDaze</title>
+  <subtitle>Linux、开发与折腾记录</subtitle>
+  <link href="https://antomie.pages.dev/" rel="alternate" type="text/html"/>
+  <link href="https://antomie.pages.dev/atom.xml" rel="self" type="application/atom+xml"/>
+  <id>https://antomie.pages.dev/</id>
+  <updated>2026-09-19T07:58:33.091Z</updated>
+  <language>zh_CN</language>
+  <entry>
+    <title>Nix的基本使用</title>
+    <link href="https://antomie.pages.dev/posts/nix/" rel="alternate" type="text/html"/>
+    <id>https://antomie.pages.dev/posts/nix/</id>
+    <published>2025-10-26T00:00:00.000Z</published>
+    <updated>2025-10-26T00:00:00.000Z</updated>
+    <summary>Nix的基本使用。</summary>
+    <content type="html"><![CDATA[<blockquote>
+<p>Nix是NixOS的默认包管理器。Nix是一个声明式包管理器，使用它的系统能更易迁移</p>
+</blockquote>
+<h2>一、基础命令操作</h2>
+<h3>1.1 安装软件包</h3>
+<p>使用 <code>nix-env</code> 安装指定包（以 <code>nano</code> 为例）：</p>
+<pre><code>nix-env -iA nixpkgs.nano
+</code></pre>
+<ul>
+<li><code>-iA</code>：<code>-i</code> 表示安装，<code>-A</code> 表示从 <code>nixpkgs</code> 属性集查找包名。</li>
+</ul>
+<h3>1.2 卸载软件包</h3>
+<pre><code>nix-env --uninstall nano
+</code></pre>
+<h3>1.3 搜索软件包</h3>
+<p>通过网页搜索 <a href="https://search.nixos.org">https://search.nixos.org</a> 或终端命令：</p>
+<pre><code>nix search nixpkgs firefox
+</code></pre>
+<h3>1.4 创建临时开发环境</h3>
+<p>通过 <code>nix-shell</code> 构建隔离环境（以 Python 为例）：</p>
+<pre><code>nix-shell -p python313
+</code></pre>
+<p>退出环境后，所有依赖自动清理。</p>
+<hr />
+<h2>二、高级功能</h2>
+<h3>2.1 配置国内镜像加速</h3>
+<p>修改 <code>/etc/nix/nix.conf</code> 添加镜像源：</p>
+<pre><code>substituters = https://mirror.sjtu.edu.cn/nix-channels/store https://cache.nixos.org/
+</code></pre>
+<p>更新通道：</p>
+<pre><code>nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
+nix-channel --update
+</code></pre>
+<h3>2.2 版本回滚</h3>
+<p>当系统更新异常时，回滚到上一版本：</p>
+<pre><code>nix-env --rollback
+# 或针对系统配置
+nixos-rebuild switch --rollback
+</code></pre>
+<h3>2.3 清理无用包</h3>
+<p>Nix 会保留历史版本，手动清理：</p>
+<pre><code>nix-collect-garbage
+</code></pre>
+<hr />
+<h2>三、常见问题</h2>
+<h3>3.1 权限不足</h3>
+<p>Nix 支持以非 root 用户安装软件，使用 <code>--user</code> 参数：</p>
+<pre><code>nix-env -iA nixpkgs.git --user
+</code></pre>
+<h3>3.2 依赖冲突</h3>
+<p>Nix 的路径隔离机制避免冲突，若需强制覆盖：</p>
+<pre><code>nix-env --upgrade &lt;package&gt;
+</code></pre>
+<hr />
+<blockquote>
+<p>这就是Nix的全部基本功能，已经足够用于日常使用</p>
+</blockquote>
+]]></content>
+    <author>
+      <name>PhantomDaze</name>
+    </author>
+  </entry>
+  <entry>
+    <title>如何环境变量修改？（win/linux）</title>
+    <link href="https://antomie.pages.dev/posts/path-edit/" rel="alternate" type="text/html"/>
+    <id>https://antomie.pages.dev/posts/path-edit/</id>
+    <published>2025-05-05T00:00:00.000Z</published>
+    <updated>2025-05-05T00:00:00.000Z</updated>
+    <summary>如何环境变量修改？（win/linux）。</summary>
+    <content type="html"><![CDATA[<h1>环境变量修改教程（Windows &amp; Linux）</h1>
+<h2>一、Windows 环境变量修改</h2>
+<h3>方法 1：图形化</h3>
+<p><strong>步骤：</strong></p>
+<ol>
+<li>
+<p><strong>打开系统设置</strong></p>
+<ul>
+<li><strong>设置</strong> → <strong>系统</strong> → <strong>系统信息</strong> → <strong>高级系统设置</strong> → <strong>环境变量</strong></li>
+<li>右键点击 <strong>此电脑</strong> → <strong>属性</strong> → <strong>高级系统设置</strong> → <strong>环境变量</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>保存并生效</strong></p>
+<ul>
+<li>所有窗口点击 <strong>确定</strong> 关闭 → 重启已打开的终端或程序。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3>方法 2：命令行</h3>
+<ul>
+<li><strong>1. 临时变量（仅当前会话有效）</strong></li>
+</ul>
+<pre><code># CMD
+set MY_VAR=value
+
+# PowerShell
+$env:MY_VAR = "value"
+</code></pre>
+<ul>
+<li><strong>2. 永久变量（需管理员权限）</strong></li>
+</ul>
+<pre><code># 设置用户变量
+setx MY_VAR "value"
+
+# 设置系统变量（需以管理员运行）
+setx MY_VAR "value" /M
+
+# 添加路径到 PATH
+setx PATH "%PATH%;C:\my\path"          # CMD
+setx PATH "$env:PATH;C:\my\path"       # PowerShell
+</code></pre>
+<hr />
+<h2>二、Linux 环境变量修改</h2>
+<h3>方法 1：临时变量（当前终端有效）</h3>
+<pre><code>export MY_VAR="value"          # 设置变量
+export PATH="$PATH:/my/path"   # 添加路径到 PATH
+</code></pre>
+<hr />
+<h3>方法 2：永久变量（按作用范围选择）</h3>
+<h4><strong>2.1 用户级配置（仅对当前用户生效）</strong></h4>
+<ul>
+<li><strong>Bash 用户</strong>：编辑 <code>~/.bashrc</code> 或 <code>~/.bash_profile</code></li>
+<li><strong>Zsh 用户</strong>：编辑 <code>~/.zshrc</code></li>
+</ul>
+<p><strong>步骤：</strong></p>
+<pre><code># 1. 打开配置文件
+nano ~/.bashrc
+
+# 2. 添加变量（示例）
+export 变量名="值"
+
+# 3. 立即生效
+source ~/.bashrc
+</code></pre>
+<h4><strong>2.2 系统级配置（所有用户生效）</strong></h4>
+<ul>
+<li>编辑 <code>/etc/environment</code>（全局变量，不依赖Shell）</li>
+<li>编辑 <code>/etc/profile</code> 或 <code>/etc/profile.d/*.sh</code>（需Shell登录）</li>
+</ul>
+<p><strong>示例（/etc/environment）：</strong></p>
+<pre><code># 格式：KEY=value（无需 export）
+JAVA_HOME="/usr/lib/jvm/java-17-openjdk"
+</code></pre>
+<hr />
+<h2>三、验证环境变量</h2>
+<ul>
+<li>
+<p><strong>Windows（CMD/PowerShell）</strong>：</p>
+<pre><code>echo %MY_VAR%      # CMD
+echo $env:MY_VAR   # PowerShell
+</code></pre>
+</li>
+<li>
+<p><strong>Linux/Mac</strong>：</p>
+<pre><code>echo $MY_VAR
+printenv MY_VAR    # 查看所有变量用 printenv
+</code></pre>
+</li>
+</ul>
+<hr />
+]]></content>
+    <author>
+      <name>PhantomDaze</name>
+    </author>
+  </entry>
+  <entry>
+    <title>Arch安装</title>
+    <link href="https://antomie.pages.dev/posts/arch-install/" rel="alternate" type="text/html"/>
+    <id>https://antomie.pages.dev/posts/arch-install/</id>
+    <published>2025-04-04T00:00:00.000Z</published>
+    <updated>2025-04-04T00:00:00.000Z</updated>
+    <summary>Arch安装。</summary>
+    <content type="html"><![CDATA[<h2>下载镜像并使用</h2>
+<ul>
+<li>
+<p>使用以下链接从<a href="https://mirrors.tuna.tsinghua.edu.cn">清华大学开源镜像站</a>站下载
+<a href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/latest/archlinux-x86_64.iso">https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/latest/archlinux-x86_64.iso</a></p>
+</li>
+<li>
+<p>根据<a href="/blog/ventoy-install/">我的另一个教程</a>安装Ventoy之后，将下载的镜像移至安装了Ventoy的存储设备内</p>
+</li>
+<li>
+<p>确保<strong>已安装Ventoy的存储设备</strong>与<strong>将要安装Arch的存储设备</strong>正常，重启电脑，在开机时狂按特定按键，进入BIOS或启动菜单，选择<strong>已安装Ventoy的存储设备</strong>启动。进入BIOS的按键因主板而异，部分主板开机时会提示</p>
+<ul>
+<li>
+<p>一般为<strong>F1,F5,F11,F12,Delete</strong>。
+例如<em>MSI H610M BOMBER</em> 的BIOS按键为<strong>Delete</strong>，启动菜单为<strong>F11</strong></p>
+</li>
+<li>
+<p>各种主板BIOS有所不同，不再赘述，自行搜索</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>-<em>祝你好运</em></p>
+<ul>
+<li>
+<p>如果一切顺利，你将能够来到这个界面
+<img src="https://antomie.pages.dev/img/ventoy-install/ventoy-boot-menu.png" alt="vt1" /></p>
+</li>
+<li>
+<p>使用**↑<strong>，</strong>↓<strong>来选择镜像，按</strong>回车**确认</p>
+</li>
+<li>
+<p>选择<strong>archlinux-x86_64.iso</strong>，回车</p>
+</li>
+<li>
+<p><img src="https://antomie.pages.dev/img/ventoy-install/ventoy-iso-selection.png" alt="vt2" /></p>
+</li>
+<li>
+<p>选择<strong>Boot in normal mode</strong>，回车</p>
+</li>
+</ul>
+<h2>正式开始安装Arch-Linux</h2>
+<p><em>你醒啦？你已经半只脚踏入Linux的大门了，在这个状态暂时无法正常复制粘贴</em>
+<em>相信眼疾手快的你能够暂时适应手输命令的。。。吧？</em>
+<em>注意点，输错了可能会导致一些意想不到的麻烦</em></p>
+<ul>
+<li>此时，你应该能看到这样的界面，或是黑乎乎的非图形化grub引导界面</li>
+</ul>
+<p><img src="https://antomie.pages.dev/img/arch-install/arch-boot-screen.png" alt="ar1" /></p>
+<ul>
+<li>但是并不重要，只需要选择<strong>第一个选项</strong>回车就行</li>
+<li>稍等片刻以后，你将会来到这个界面<img src="https://antomie.pages.dev/img/arch-install/arch-after-boot.png" alt="ar2" /></li>
+</ul>
+<p>-<em>据瞎猜，至此，你已经超越了90%的人</em>
+<strong>若使用非有线网络连接，则还需要配置网络连接</strong></p>
+<h3>更改软件源为国内镜像源</h3>
+<pre><code>echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' &gt; /etc/pacman.d/mirrorlist
+</code></pre>
+<pre><code>pacman -Sy
+</code></pre>
+<p><img src="https://antomie.pages.dev/img/arch-install/arch-pacman-update.png" alt="ar3" />
+若看到这样的输出，说明一切正常</p>
+<h3>进行安装</h3>
+<p>使用以下命令</p>
+<pre><code>archinstall
+</code></pre>
+<p>稍等片刻，你将看到这个界面
+<img src="https://antomie.pages.dev/img/arch-install/archinstall-menu.png" alt="ar4" /></p>
+<ul>
+<li>
+<p><strong>不要修改第一项与第二项，你也不想看到你的终端全是密密麻麻的小方块吧？</strong></p>
+</li>
+<li>
+<p>选择Mirrors &gt; Custom mirrors &gt; 输入任意名称 &gt; 输入<a href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch">https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch</a></p>
+<ul>
+<li>选择 Required &gt; 选择 TrustAll</li>
+<li>选择 Confirm and exit（确认并退出）</li>
+<li>选择 Back</li>
+</ul>
+</li>
+<li>
+<p>选择<strong>Disk configuration</strong> &gt; Partitioning &gt; Use a best-effort default partition layout</p>
+<ul>
+<li>选择<strong>将要安装Arch的存储设备</strong></li>
+<li>Filesystem一般选择<strong>ext4</strong></li>
+<li><em>Would you like to create a separate partition for /home?</em>
+是否创建一个分区挂载到/home
+根据个人习惯选择，我选择NO</li>
+<li>选择Back</li>
+</ul>
+</li>
+<li>
+<p>选择<strong>Root password</strong>（设置root密码）<em>别设置得复杂到自己都记不住</em></p>
+<ul>
+<li>选择<strong>User account</strong> &gt; Add a user &gt; 输入一个自己想设置的用户名</li>
+<li>设置密码（为这个用户设置的，而非root密码）</li>
+<li>Username: antom
+Password: ******
+Should "antom" be a superuser (sudo)?
+选择Yes</li>
+<li>选择<strong>Confirm and exit</strong></li>
+</ul>
+</li>
+<li>
+<p>选择<strong>Network configuration</strong></p>
+<ul>
+<li>选择<strong>Copy ISO network configuration to installation</strong></li>
+</ul>
+</li>
+<li>
+<p>选择<strong>Timezone</strong></p>
+<ul>
+<li>选择<strong>Asia/Shanghai</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>选择Install！</strong></p>
+<ul>
+<li><strong>YES！</strong></li>
+</ul>
+</li>
+</ul>
+<hr />
+<p><em>至此，你可以坐下来喝杯茶，等待安装</em>
+当显示<strong>Would you like to chroot into the newly created installation and perform post-installation configuration?<strong>时，就说明</strong>安装成功</strong>了。</p>
+<h3>启动安装好的Arch</h3>
+<ul>
+<li>选择NO</li>
+<li>使用以下命令关机</li>
+</ul>
+<pre><code>poweroff
+</code></pre>
+<p><strong>当关机后拔掉用来安装系统的U盘再开机</strong>
+若在重启后看到如下界面<img src="https://antomie.pages.dev/img/arch-install/arch-success-boot.png" alt="ar5" />
+<em><strong>则说明你成功了！</strong></em></p>
+<hr />
+<p>-<em>下一篇教程：在Arch-Linux安装图形界面</em></p>
+]]></content>
+    <author>
+      <name>PhantomDaze</name>
+    </author>
+  </entry>
+  <entry>
+    <title>Node.JS安装</title>
+    <link href="https://antomie.pages.dev/posts/nodejs-install/" rel="alternate" type="text/html"/>
+    <id>https://antomie.pages.dev/posts/nodejs-install/</id>
+    <published>2025-03-30T00:00:00.000Z</published>
+    <updated>2025-03-30T00:00:00.000Z</updated>
+    <summary>Node.JS安装。</summary>
+    <content type="html"><![CDATA[<h3>下载并解压nodejs</h3>
+<pre><code>wget https://nodejs.org/dist/v22.13.0/node-v22.13.0-linux-x64.tar.xz
+</code></pre>
+<pre><code>tar zxvf node-v22.13.0-linux-x64.tar.gz
+</code></pre>
+<h3>删去解压后多余的压缩包</h3>
+<pre><code>rm -rf node-v22.13.0-linux-x64.tar.gz
+</code></pre>
+<h3>将其更名并移动到/usr/local/</h3>
+<pre><code>mkdir -p /usr/local &amp;&amp; mv node-v22.13.0-linux-x64 /usr/local/nodejs
+</code></pre>
+<h3>建立软链接使其作用于全局</h3>
+<pre><code>ln -s /usr/local/nodejs/bin/node /usr/local/bin &amp;&amp; ln -s /usr/local/nodejs/bin/npm /usr/local/bin
+</code></pre>
+<h2>可直接使用以下脚本</h2>
+<pre><code>#!/bin/bash
+wget https://nodejs.org/dist/v22.13.0/node-v22.13.0-linux-x64.tar.xz
+tar zxvf node-v22.13.0-linux-x64.tar.gz
+rm -rf node-v22.13.0-linux-x64.tar.gz
+mkdir -p /usr/local
+mv node-v22.13.0-linux-x64 /usr/local/nodejs
+ln -s /usr/local/nodejs/bin/node /usr/local/bin
+ln -s /usr/local/nodejs/bin/npm /usr/local/bin
+</code></pre>
+<p>保存为node-install.sh
+使用以下命令执行</p>
+<pre><code>chmod +x node-install.sh &amp;&amp; ./node-install.sh
+</code></pre>
+<hr />
+]]></content>
+    <author>
+      <name>PhantomDaze</name>
+    </author>
+  </entry>
+  <entry>
+    <title>Ventoy安装</title>
+    <link href="https://antomie.pages.dev/posts/ventoy-install/" rel="alternate" type="text/html"/>
+    <id>https://antomie.pages.dev/posts/ventoy-install/</id>
+    <published>2025-01-24T00:00:00.000Z</published>
+    <updated>2025-01-24T00:00:00.000Z</updated>
+    <summary>Ventoy安装。</summary>
+    <content type="html"><![CDATA[<ul>
+<li>Ventoy可以让一个U盘能够安装多个镜像，在启动时可选择引导镜像。一般用于多系统安装盘</li>
+</ul>
+<h2>下载并解压Ventoy</h2>
+<p>ventoy官方网站带宽较小，建议前往镜像站下载</p>
+<ul>
+<li><a href="https://mirrors.nju.edu.cn/github-release/ventoy/Ventoy/Ventoy%201.0.99%20release/">南京大学镜像站-Ventoy下载</a></li>
+</ul>
+<p><img src="https://antomie.pages.dev/img/ventoy-install/nju-mirror-site.png" alt="南京大学镜像站" /></p>
+<ul>
+<li>根据系统下载</li>
+</ul>
+<p><img src="https://antomie.pages.dev/img/ventoy-install/ventoy-extract-folder.png" alt="解压" /></p>
+<h2>安装至移动硬盘/U盘</h2>
+<ul>
+<li>
+<p>双击其中的"Ventoy2Disk.exe"启动
+<img src="https://antomie.pages.dev/img/ventoy-install/ventoy-disk-program.png" alt="exp2" /></p>
+</li>
+<li>
+<p>打开配置选项进行配置
+<img src="https://antomie.pages.dev/img/ventoy-install/ventoy-config-options.png" alt="exp3" /></p>
+</li>
+<li>
+<p>若非不支持UEFI引导的远古设备，分区类型都建议使用GPT
+<img src="https://antomie.pages.dev/img/ventoy-install/ventoy-partition-type.png" alt="exp4" /></p>
+</li>
+<li>
+<p>建议使用NTFS</p>
+</li>
+<li>
+<p>完成以后查看设备选择是否正确，点击安装</p>
+</li>
+</ul>
+<hr />
+<p>至此，Ventoy安装完成，只需要将要引导的镜像(iso)文件放入已安装Ventoy的设备，修改引导设备为此设备，即可引导任意镜像</p>
+<hr />
+]]></content>
+    <author>
+      <name>PhantomDaze</name>
+    </author>
+  </entry>
+  <entry>
+    <title>yay 安装</title>
+    <link href="https://antomie.pages.dev/posts/yay/" rel="alternate" type="text/html"/>
+    <id>https://antomie.pages.dev/posts/yay/</id>
+    <published>2025-01-24T00:00:00.000Z</published>
+    <updated>2025-01-24T00:00:00.000Z</updated>
+    <summary>yay 安装。</summary>
+    <content type="html"><![CDATA[<pre><code>cd ~
+sudo pacman -S base-devel git
+git clone https://aur.archlinux.org/yay-bin.git
+cd yay-bin
+makepkg -si
+</code></pre>
+<hr />
+]]></content>
+    <author>
+      <name>PhantomDaze</name>
+    </author>
+  </entry>
+</feed>

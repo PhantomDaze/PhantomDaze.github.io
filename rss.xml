@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>PhantomDaze</title><description>Linux、开发与折腾记录</description><link>https://antomie.pages.dev/</link><language>zh_CN</language><item><title>Nix的基本使用</title><link>https://antomie.pages.dev/posts/nix/</link><guid isPermaLink="true">https://antomie.pages.dev/posts/nix/</guid><description>Nix的基本使用。</description><pubDate>Sun, 26 Oct 2025 00:00:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;
+&lt;p&gt;Nix是NixOS的默认包管理器。Nix是一个声明式包管理器，使用它的系统能更易迁移&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;一、基础命令操作&lt;/h2&gt;
+&lt;h3&gt;1.1 安装软件包&lt;/h3&gt;
+&lt;p&gt;使用 &lt;code&gt;nix-env&lt;/code&gt; 安装指定包（以 &lt;code&gt;nano&lt;/code&gt; 为例）：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nix-env -iA nixpkgs.nano
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-iA&lt;/code&gt;：&lt;code&gt;-i&lt;/code&gt; 表示安装，&lt;code&gt;-A&lt;/code&gt; 表示从 &lt;code&gt;nixpkgs&lt;/code&gt; 属性集查找包名。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;1.2 卸载软件包&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;nix-env --uninstall nano
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;1.3 搜索软件包&lt;/h3&gt;
+&lt;p&gt;通过网页搜索 &lt;a href=&quot;https://search.nixos.org&quot;&gt;https://search.nixos.org&lt;/a&gt; 或终端命令：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nix search nixpkgs firefox
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;1.4 创建临时开发环境&lt;/h3&gt;
+&lt;p&gt;通过 &lt;code&gt;nix-shell&lt;/code&gt; 构建隔离环境（以 Python 为例）：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nix-shell -p python313
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;退出环境后，所有依赖自动清理。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;二、高级功能&lt;/h2&gt;
+&lt;h3&gt;2.1 配置国内镜像加速&lt;/h3&gt;
+&lt;p&gt;修改 &lt;code&gt;/etc/nix/nix.conf&lt;/code&gt; 添加镜像源：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;substituters = https://mirror.sjtu.edu.cn/nix-channels/store https://cache.nixos.org/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;更新通道：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
+nix-channel --update
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;2.2 版本回滚&lt;/h3&gt;
+&lt;p&gt;当系统更新异常时，回滚到上一版本：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nix-env --rollback
+# 或针对系统配置
+nixos-rebuild switch --rollback
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;2.3 清理无用包&lt;/h3&gt;
+&lt;p&gt;Nix 会保留历史版本，手动清理：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nix-collect-garbage
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;三、常见问题&lt;/h2&gt;
+&lt;h3&gt;3.1 权限不足&lt;/h3&gt;
+&lt;p&gt;Nix 支持以非 root 用户安装软件，使用 &lt;code&gt;--user&lt;/code&gt; 参数：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nix-env -iA nixpkgs.git --user
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;3.2 依赖冲突&lt;/h3&gt;
+&lt;p&gt;Nix 的路径隔离机制避免冲突，若需强制覆盖：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nix-env --upgrade &amp;lt;package&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这就是Nix的全部基本功能，已经足够用于日常使用&lt;/p&gt;
+&lt;/blockquote&gt;
+</content:encoded></item><item><title>如何环境变量修改？（win/linux）</title><link>https://antomie.pages.dev/posts/path-edit/</link><guid isPermaLink="true">https://antomie.pages.dev/posts/path-edit/</guid><description>如何环境变量修改？（win/linux）。</description><pubDate>Mon, 05 May 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;环境变量修改教程（Windows &amp;amp; Linux）&lt;/h1&gt;
+&lt;h2&gt;一、Windows 环境变量修改&lt;/h2&gt;
+&lt;h3&gt;方法 1：图形化&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;步骤：&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;打开系统设置&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;设置&lt;/strong&gt; → &lt;strong&gt;系统&lt;/strong&gt; → &lt;strong&gt;系统信息&lt;/strong&gt; → &lt;strong&gt;高级系统设置&lt;/strong&gt; → &lt;strong&gt;环境变量&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;右键点击 &lt;strong&gt;此电脑&lt;/strong&gt; → &lt;strong&gt;属性&lt;/strong&gt; → &lt;strong&gt;高级系统设置&lt;/strong&gt; → &lt;strong&gt;环境变量&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;保存并生效&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;所有窗口点击 &lt;strong&gt;确定&lt;/strong&gt; 关闭 → 重启已打开的终端或程序。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr /&gt;
+&lt;h3&gt;方法 2：命令行&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;1. 临时变量（仅当前会话有效）&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;# CMD
+set MY_VAR=value
+
+# PowerShell
+$env:MY_VAR = &quot;value&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;2. 永久变量（需管理员权限）&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;# 设置用户变量
+setx MY_VAR &quot;value&quot;
+
+# 设置系统变量（需以管理员运行）
+setx MY_VAR &quot;value&quot; /M
+
+# 添加路径到 PATH
+setx PATH &quot;%PATH%;C:\my\path&quot;          # CMD
+setx PATH &quot;$env:PATH;C:\my\path&quot;       # PowerShell
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;二、Linux 环境变量修改&lt;/h2&gt;
+&lt;h3&gt;方法 1：临时变量（当前终端有效）&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;export MY_VAR=&quot;value&quot;          # 设置变量
+export PATH=&quot;$PATH:/my/path&quot;   # 添加路径到 PATH
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h3&gt;方法 2：永久变量（按作用范围选择）&lt;/h3&gt;
+&lt;h4&gt;&lt;strong&gt;2.1 用户级配置（仅对当前用户生效）&lt;/strong&gt;&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Bash 用户&lt;/strong&gt;：编辑 &lt;code&gt;~/.bashrc&lt;/code&gt; 或 &lt;code&gt;~/.bash_profile&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Zsh 用户&lt;/strong&gt;：编辑 &lt;code&gt;~/.zshrc&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;步骤：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# 1. 打开配置文件
+nano ~/.bashrc
+
+# 2. 添加变量（示例）
+export 变量名=&quot;值&quot;
+
+# 3. 立即生效
+source ~/.bashrc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4&gt;&lt;strong&gt;2.2 系统级配置（所有用户生效）&lt;/strong&gt;&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;编辑 &lt;code&gt;/etc/environment&lt;/code&gt;（全局变量，不依赖Shell）&lt;/li&gt;
+&lt;li&gt;编辑 &lt;code&gt;/etc/profile&lt;/code&gt; 或 &lt;code&gt;/etc/profile.d/*.sh&lt;/code&gt;（需Shell登录）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;示例（/etc/environment）：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# 格式：KEY=value（无需 export）
+JAVA_HOME=&quot;/usr/lib/jvm/java-17-openjdk&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;三、验证环境变量&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Windows（CMD/PowerShell）&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo %MY_VAR%      # CMD
+echo $env:MY_VAR   # PowerShell
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Linux/Mac&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo $MY_VAR
+printenv MY_VAR    # 查看所有变量用 printenv
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+</content:encoded></item><item><title>Arch安装</title><link>https://antomie.pages.dev/posts/arch-install/</link><guid isPermaLink="true">https://antomie.pages.dev/posts/arch-install/</guid><description>Arch安装。</description><pubDate>Fri, 04 Apr 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;下载镜像并使用&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;使用以下链接从&lt;a href=&quot;https://mirrors.tuna.tsinghua.edu.cn&quot;&gt;清华大学开源镜像站&lt;/a&gt;站下载
+&lt;a href=&quot;https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/latest/archlinux-x86_64.iso&quot;&gt;https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/latest/archlinux-x86_64.iso&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;根据&lt;a href=&quot;/blog/ventoy-install/&quot;&gt;我的另一个教程&lt;/a&gt;安装Ventoy之后，将下载的镜像移至安装了Ventoy的存储设备内&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;确保&lt;strong&gt;已安装Ventoy的存储设备&lt;/strong&gt;与&lt;strong&gt;将要安装Arch的存储设备&lt;/strong&gt;正常，重启电脑，在开机时狂按特定按键，进入BIOS或启动菜单，选择&lt;strong&gt;已安装Ventoy的存储设备&lt;/strong&gt;启动。进入BIOS的按键因主板而异，部分主板开机时会提示&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;一般为&lt;strong&gt;F1,F5,F11,F12,Delete&lt;/strong&gt;。
+例如&lt;em&gt;MSI H610M BOMBER&lt;/em&gt; 的BIOS按键为&lt;strong&gt;Delete&lt;/strong&gt;，启动菜单为&lt;strong&gt;F11&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;各种主板BIOS有所不同，不再赘述，自行搜索&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;-&lt;em&gt;祝你好运&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;如果一切顺利，你将能够来到这个界面
+&lt;img src=&quot;https://antomie.pages.dev/img/ventoy-install/ventoy-boot-menu.png&quot; alt=&quot;vt1&quot; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用**↑&lt;strong&gt;，&lt;/strong&gt;↓&lt;strong&gt;来选择镜像，按&lt;/strong&gt;回车**确认&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;选择&lt;strong&gt;archlinux-x86_64.iso&lt;/strong&gt;，回车&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;img src=&quot;https://antomie.pages.dev/img/ventoy-install/ventoy-iso-selection.png&quot; alt=&quot;vt2&quot; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;选择&lt;strong&gt;Boot in normal mode&lt;/strong&gt;，回车&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;正式开始安装Arch-Linux&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;你醒啦？你已经半只脚踏入Linux的大门了，在这个状态暂时无法正常复制粘贴&lt;/em&gt;
+&lt;em&gt;相信眼疾手快的你能够暂时适应手输命令的。。。吧？&lt;/em&gt;
+&lt;em&gt;注意点，输错了可能会导致一些意想不到的麻烦&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;此时，你应该能看到这样的界面，或是黑乎乎的非图形化grub引导界面&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://antomie.pages.dev/img/arch-install/arch-boot-screen.png&quot; alt=&quot;ar1&quot; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;但是并不重要，只需要选择&lt;strong&gt;第一个选项&lt;/strong&gt;回车就行&lt;/li&gt;
+&lt;li&gt;稍等片刻以后，你将会来到这个界面&lt;img src=&quot;https://antomie.pages.dev/img/arch-install/arch-after-boot.png&quot; alt=&quot;ar2&quot; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;-&lt;em&gt;据瞎猜，至此，你已经超越了90%的人&lt;/em&gt;
+&lt;strong&gt;若使用非有线网络连接，则还需要配置网络连接&lt;/strong&gt;&lt;/p&gt;
+&lt;h3&gt;更改软件源为国内镜像源&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;echo &apos;Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch&apos; &amp;gt; /etc/pacman.d/mirrorlist
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;pacman -Sy
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&quot;https://antomie.pages.dev/img/arch-install/arch-pacman-update.png&quot; alt=&quot;ar3&quot; /&gt;
+若看到这样的输出，说明一切正常&lt;/p&gt;
+&lt;h3&gt;进行安装&lt;/h3&gt;
+&lt;p&gt;使用以下命令&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;archinstall
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;稍等片刻，你将看到这个界面
+&lt;img src=&quot;https://antomie.pages.dev/img/arch-install/archinstall-menu.png&quot; alt=&quot;ar4&quot; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;不要修改第一项与第二项，你也不想看到你的终端全是密密麻麻的小方块吧？&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;选择Mirrors &amp;gt; Custom mirrors &amp;gt; 输入任意名称 &amp;gt; 输入&lt;a href=&quot;https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch&quot;&gt;https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;选择 Required &amp;gt; 选择 TrustAll&lt;/li&gt;
+&lt;li&gt;选择 Confirm and exit（确认并退出）&lt;/li&gt;
+&lt;li&gt;选择 Back&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;选择&lt;strong&gt;Disk configuration&lt;/strong&gt; &amp;gt; Partitioning &amp;gt; Use a best-effort default partition layout&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;选择&lt;strong&gt;将要安装Arch的存储设备&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Filesystem一般选择&lt;strong&gt;ext4&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Would you like to create a separate partition for /home?&lt;/em&gt;
+是否创建一个分区挂载到/home
+根据个人习惯选择，我选择NO&lt;/li&gt;
+&lt;li&gt;选择Back&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;选择&lt;strong&gt;Root password&lt;/strong&gt;（设置root密码）&lt;em&gt;别设置得复杂到自己都记不住&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;选择&lt;strong&gt;User account&lt;/strong&gt; &amp;gt; Add a user &amp;gt; 输入一个自己想设置的用户名&lt;/li&gt;
+&lt;li&gt;设置密码（为这个用户设置的，而非root密码）&lt;/li&gt;
+&lt;li&gt;Username: antom
+Password: ******
+Should &quot;antom&quot; be a superuser (sudo)?
+选择Yes&lt;/li&gt;
+&lt;li&gt;选择&lt;strong&gt;Confirm and exit&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;选择&lt;strong&gt;Network configuration&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;选择&lt;strong&gt;Copy ISO network configuration to installation&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;选择&lt;strong&gt;Timezone&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;选择&lt;strong&gt;Asia/Shanghai&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;选择Install！&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;YES！&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;em&gt;至此，你可以坐下来喝杯茶，等待安装&lt;/em&gt;
+当显示&lt;strong&gt;Would you like to chroot into the newly created installation and perform post-installation configuration?&lt;strong&gt;时，就说明&lt;/strong&gt;安装成功&lt;/strong&gt;了。&lt;/p&gt;
+&lt;h3&gt;启动安装好的Arch&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;选择NO&lt;/li&gt;
+&lt;li&gt;使用以下命令关机&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;poweroff
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;当关机后拔掉用来安装系统的U盘再开机&lt;/strong&gt;
+若在重启后看到如下界面&lt;img src=&quot;https://antomie.pages.dev/img/arch-install/arch-success-boot.png&quot; alt=&quot;ar5&quot; /&gt;
+&lt;em&gt;&lt;strong&gt;则说明你成功了！&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;-&lt;em&gt;下一篇教程：在Arch-Linux安装图形界面&lt;/em&gt;&lt;/p&gt;
+</content:encoded></item><item><title>Node.JS安装</title><link>https://antomie.pages.dev/posts/nodejs-install/</link><guid isPermaLink="true">https://antomie.pages.dev/posts/nodejs-install/</guid><description>Node.JS安装。</description><pubDate>Sun, 30 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;下载并解压nodejs&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;wget https://nodejs.org/dist/v22.13.0/node-v22.13.0-linux-x64.tar.xz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;tar zxvf node-v22.13.0-linux-x64.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;删去解压后多余的压缩包&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;rm -rf node-v22.13.0-linux-x64.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;将其更名并移动到/usr/local/&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;mkdir -p /usr/local &amp;amp;&amp;amp; mv node-v22.13.0-linux-x64 /usr/local/nodejs
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;建立软链接使其作用于全局&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;ln -s /usr/local/nodejs/bin/node /usr/local/bin &amp;amp;&amp;amp; ln -s /usr/local/nodejs/bin/npm /usr/local/bin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;可直接使用以下脚本&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;#!/bin/bash
+wget https://nodejs.org/dist/v22.13.0/node-v22.13.0-linux-x64.tar.xz
+tar zxvf node-v22.13.0-linux-x64.tar.gz
+rm -rf node-v22.13.0-linux-x64.tar.gz
+mkdir -p /usr/local
+mv node-v22.13.0-linux-x64 /usr/local/nodejs
+ln -s /usr/local/nodejs/bin/node /usr/local/bin
+ln -s /usr/local/nodejs/bin/npm /usr/local/bin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;保存为node-install.sh
+使用以下命令执行&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;chmod +x node-install.sh &amp;amp;&amp;amp; ./node-install.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+</content:encoded></item><item><title>Ventoy安装</title><link>https://antomie.pages.dev/posts/ventoy-install/</link><guid isPermaLink="true">https://antomie.pages.dev/posts/ventoy-install/</guid><description>Ventoy安装。</description><pubDate>Fri, 24 Jan 2025 00:00:00 GMT</pubDate><content:encoded>&lt;ul&gt;
+&lt;li&gt;Ventoy可以让一个U盘能够安装多个镜像，在启动时可选择引导镜像。一般用于多系统安装盘&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;下载并解压Ventoy&lt;/h2&gt;
+&lt;p&gt;ventoy官方网站带宽较小，建议前往镜像站下载&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://mirrors.nju.edu.cn/github-release/ventoy/Ventoy/Ventoy%201.0.99%20release/&quot;&gt;南京大学镜像站-Ventoy下载&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://antomie.pages.dev/img/ventoy-install/nju-mirror-site.png&quot; alt=&quot;南京大学镜像站&quot; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;根据系统下载&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://antomie.pages.dev/img/ventoy-install/ventoy-extract-folder.png&quot; alt=&quot;解压&quot; /&gt;&lt;/p&gt;
+&lt;h2&gt;安装至移动硬盘/U盘&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;双击其中的&quot;Ventoy2Disk.exe&quot;启动
+&lt;img src=&quot;https://antomie.pages.dev/img/ventoy-install/ventoy-disk-program.png&quot; alt=&quot;exp2&quot; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;打开配置选项进行配置
+&lt;img src=&quot;https://antomie.pages.dev/img/ventoy-install/ventoy-config-options.png&quot; alt=&quot;exp3&quot; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;若非不支持UEFI引导的远古设备，分区类型都建议使用GPT
+&lt;img src=&quot;https://antomie.pages.dev/img/ventoy-install/ventoy-partition-type.png&quot; alt=&quot;exp4&quot; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;建议使用NTFS&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;完成以后查看设备选择是否正确，点击安装&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;p&gt;至此，Ventoy安装完成，只需要将要引导的镜像(iso)文件放入已安装Ventoy的设备，修改引导设备为此设备，即可引导任意镜像&lt;/p&gt;
+&lt;hr /&gt;
+</content:encoded></item><item><title>yay 安装</title><link>https://antomie.pages.dev/posts/yay/</link><guid isPermaLink="true">https://antomie.pages.dev/posts/yay/</guid><description>yay 安装。</description><pubDate>Fri, 24 Jan 2025 00:00:00 GMT</pubDate><content:encoded>&lt;pre&gt;&lt;code&gt;cd ~
+sudo pacman -S base-devel git
+git clone https://aur.archlinux.org/yay-bin.git
+cd yay-bin
+makepkg -si
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+</content:encoded></item></channel></rss>
