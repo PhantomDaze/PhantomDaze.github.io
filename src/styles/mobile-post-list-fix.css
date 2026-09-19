@@ -1,0 +1,69 @@
+/**
+ * 移动端文章列表初始化优化
+ * Mobile Post List Initialization Fix
+ * 解决移动端文章列表初始化时的闪烁和间距问题
+ */
+
+/* 关键：页面加载时立即应用正确的移动端样式 */
+@media (max-width: 768px) {
+  /* 强制在初始化前隐藏内容，避免闪烁 */
+  #post-list-container:not(.js-initialized) {
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+  }
+  
+  /* JavaScript初始化完成后显示内容 */
+  #post-list-container.js-initialized {
+    opacity: 1;
+  }
+  
+  /* 确保移动端使用紧凑的列表布局 */
+  #post-list-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    min-height: auto !important;
+  }
+  
+  /* 覆盖所有可能的网格模式 */
+  #post-list-container.grid-mode {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    grid-template-columns: none !important;
+    grid-auto-rows: auto !important;
+  }
+  
+  /* 优化文章卡片间距 */
+  #post-list-container .post-card-item {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  /* 优化卡片边框和圆角 */
+  #post-list-container .card-base {
+    margin-bottom: 0 !important;
+    border-radius: var(--radius-large) !important;
+  }
+  
+  /* 移除不必要的分隔线 */
+  #post-list-container > div.border-t-\[1px\] {
+    display: none !important;
+  }
+  
+  /* 增加文章列表容器的底部间距，与分页按钮保持适当距离 */
+  #post-list-container {
+    margin-bottom: 2rem !important; /* 增加到2rem，约32px */
+  }
+}
+
+/* 桌面端保持原有样式 */
+@media (min-width: 769px) {
+  #post-list-container {
+    transition: all 0.3s ease-in-out;
+  }
+}
