@@ -2,7 +2,7 @@
 
 个人博客，记录 Linux、开发工具和一些折腾过程。
 
-- 站点：https://antomie.pages.dev
+- 站点：https://www.koishi.tech
 - 框架：[Astro](https://astro.build)
 - 主题：[Mizuki](https://gitee.com/matsuzakayuki/Mizuki)
 
