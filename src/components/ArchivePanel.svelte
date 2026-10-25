@@ -5,8 +5,8 @@ import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
-export let tags: string[];
-export let categories: string[];
+export let tags: string[] = [];
+export let categories: string[] = [];
 export let sortedPosts: Post[] = [];
 
 const params = new URLSearchParams(window.location.search);
@@ -17,10 +17,10 @@ const uncategorized = params.get("uncategorized");
 interface Post {
 	slug: string;
 	data: {
-		title: string;
-		tags: string[];
+		title?: string;
+		tags?: string[];
 		category?: string;
-		published: Date;
+		published?: Date;
 	};
 }
 
@@ -31,13 +31,14 @@ interface Group {
 
 let groups: Group[] = [];
 
-function formatDate(date: Date) {
+function formatDate(date?: Date) {
+	if (!date) return "";
 	const month = (date.getMonth() + 1).toString().padStart(2, "0");
 	const day = date.getDate().toString().padStart(2, "0");
 	return `${month}-${day}`;
 }
 
-function formatTag(tagList: string[]) {
+function formatTag(tagList: string[] = []) {
 	return tagList.map((t) => `#${t}`).join(" ");
 }
 
@@ -64,7 +65,8 @@ onMount(async () => {
 
 	const grouped = filteredPosts.reduce(
 		(acc, post) => {
-			const year = post.data.published.getFullYear();
+			const year = post.data.published?.getFullYear();
+			if (year === undefined) return acc;
 			if (!acc[year]) {
 				acc[year] = [];
 			}
@@ -106,7 +108,7 @@ onMount(async () => {
             {#each group.posts as post}
                 <a
                         href={getPostUrlBySlug(post.slug)}
-                        aria-label={post.data.title}
+                        aria-label={post.data.title ?? ""}
                         class="group btn-plain !block h-10 w-full rounded-lg hover:text-[initial]"
                 >
                     <div class="flex flex-row justify-start items-center h-full">
