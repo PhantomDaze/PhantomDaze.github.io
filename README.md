@@ -1,4 +1,4 @@
-# PhantomDaze
+# Coishi-C261
 
 个人博客，记录 Linux、开发工具和一些折腾过程。
 

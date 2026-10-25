@@ -6,9 +6,9 @@
 - 未整理的折腾记录
 - 开发环境与个人项目笔记
 
-## 博主 PhantomDaze
+## 博主 Coishi-C261
 
-- GitHub：[PhantomDaze](https://github.com/PhantomDaze)
+- GitHub：[Coishi-C261](https://github.com/PhantomDaze)
 - Bilibili：[P-Antom](https://space.bilibili.com/1590285979)
 
 本站使用 Astro 与 Mizuki 主题构建。

@@ -20,7 +20,7 @@ import { LinkPreset } from "./types/config";
 const SITE_LANG = "zh_CN"; // 语言代码，例如：'en'、'zh_CN'、'ja' 等。
 
 export const siteConfig: SiteConfig = {
-	title: "PhantomDaze",
+	title: "Coishi-C261",
 	subtitle: "Linux、开发与折腾记录",
 
 	lang: SITE_LANG,
@@ -44,7 +44,7 @@ export const siteConfig: SiteConfig = {
 	// 顶栏标题配置
 	navbarTitle: {
 		// 顶栏标题文本
-		text: "PhantomDaze",
+		text: "Coishi-C261",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.png
 		icon: "/avatar.png",
 	},
@@ -184,12 +184,6 @@ export const navBarConfig: NavBarConfig = {
 					external: true,
 					icon: "fa6-brands:bilibili",
 				},
-				{
-					name: "Gitee",
-					url: "https://gitee.com/matsuzakayuki/Mizuki",
-					external: true,
-					icon: "mdi:git",
-				},
 			],
 		},
 	],
@@ -197,7 +191,7 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
 	avatar: "/avatar.png", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
-	name: "PhantomDaze",
+	name: "Coishi-C261",
 	bio: "Linux、开发与折腾记录",
 	typewriter: {
 		enable: true, // 启用个人简介打字机效果
@@ -205,29 +199,14 @@ export const profileConfig: ProfileConfig = {
 	},
 	links: [
 		{
-			name: "Bilibli",
+			name: "Bilibili",
 			icon: "fa6-brands:bilibili",
 			url: "https://space.bilibili.com/1590285979",
-		},
-		{
-			name: "Gitee",
-			icon: "mdi:git",
-			url: "https://github.com/PhantomDaze",
 		},
 		{
 			name: "GitHub",
 			icon: "fa6-brands:github",
 			url: "https://github.com/PhantomDaze",
-		},
-		{
-			name: "Codeberg",
-			icon: "simple-icons:codeberg",
-			url: "https://github.com/PhantomDaze",
-		},
-		{
-			name: "Discord",
-			icon: "fa6-brands:discord",
-			url: "https://space.bilibili.com/1590285979",
 		},
 	],
 };
