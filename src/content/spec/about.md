@@ -10,5 +10,7 @@
 
 - GitHub：[Coishi-C261](https://github.com/PhantomDaze)
 - Bilibili：[P-Antom](https://space.bilibili.com/1590285979)
+- CurseForge：[Coishi_C261](https://www.curseforge.com/members/coishi_c261/projects)
+- Modrinth：[Coishi-C261](https://modrinth.com/user/Coishi-C261)
 
 本站使用 Astro 与 Mizuki 主题构建。

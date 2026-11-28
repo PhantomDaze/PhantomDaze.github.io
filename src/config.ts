@@ -184,6 +184,18 @@ export const navBarConfig: NavBarConfig = {
 					external: true,
 					icon: "fa6-brands:bilibili",
 				},
+				{
+					name: "CurseForge",
+					url: "https://www.curseforge.com/members/coishi_c261/projects",
+					external: true,
+					icon: "simple-icons:curseforge",
+				},
+				{
+					name: "Modrinth",
+					url: "https://modrinth.com/user/Coishi-C261",
+					external: true,
+					icon: "simple-icons:modrinth",
+				},
 			],
 		},
 	],
@@ -207,6 +219,16 @@ export const profileConfig: ProfileConfig = {
 			name: "GitHub",
 			icon: "fa6-brands:github",
 			url: "https://github.com/PhantomDaze",
+		},
+		{
+			name: "CurseForge",
+			icon: "simple-icons:curseforge",
+			url: "https://www.curseforge.com/members/coishi_c261/projects",
+		},
+		{
+			name: "Modrinth",
+			icon: "simple-icons:modrinth",
+			url: "https://modrinth.com/user/Coishi-C261",
 		},
 	],
 };
